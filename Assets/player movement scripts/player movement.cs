@@ -2,20 +2,21 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("移动")]
     public float moveSpeed = 5f;
+
+    [Header("跳跃")]
     public float jumpForce = 7f;
 
+    [Header("视角")]
     public Transform cameraTransform;
     public float mouseSensitivity = 2f;
 
     private Rigidbody rb;
-    private bool isGrounded = false;
 
-    private float cameraVerticalRotation = 0f;
+    private bool isGrounded;
 
-    // 当前是否碰到墙
-    private bool touchingWall = false;
-    private Vector3 wallNormal;
+    private float cameraVerticalRotation;
 
 
     void Start()
@@ -29,21 +30,34 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // =========================
-        // 鼠标控制视角
-        // =========================
+        // =====================
+        // 鼠标视角
+        // =====================
 
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        float mouseX =
+            Input.GetAxis("Mouse X")
+            * mouseSensitivity;
+
+        float mouseY =
+            Input.GetAxis("Mouse Y")
+            * mouseSensitivity;
+
 
         // 左右旋转玩家
-        transform.Rotate(Vector3.up * mouseX);
+        transform.Rotate(
+            Vector3.up * mouseX
+        );
 
-        // 上下旋转Camera
+
+        // 上下旋转相机
         cameraVerticalRotation -= mouseY;
 
         cameraVerticalRotation =
-            Mathf.Clamp(cameraVerticalRotation, -90f, 90f);
+            Mathf.Clamp(
+                cameraVerticalRotation,
+                -80f,
+                80f
+            );
 
         cameraTransform.localRotation =
             Quaternion.Euler(
@@ -53,30 +67,35 @@ public class PlayerController : MonoBehaviour
             );
 
 
-        // =========================
+        // =====================
         // 跳跃
-        // =========================
+        // =====================
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (
+            Input.GetKeyDown(KeyCode.Space)
+            && isGrounded
+        )
         {
             rb.AddForce(
                 Vector3.up * jumpForce,
                 ForceMode.Impulse
             );
-
-            isGrounded = false;
         }
     }
 
 
     void FixedUpdate()
     {
-        // =========================
-        // WASD
-        // =========================
+        // =====================
+        // WASD移动
+        // =====================
 
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
+        float x =
+            Input.GetAxisRaw("Horizontal");
+
+        float z =
+            Input.GetAxisRaw("Vertical");
+
 
         Vector3 movement =
             transform.right * x +
@@ -85,80 +104,41 @@ public class PlayerController : MonoBehaviour
         movement.Normalize();
 
 
-        // =========================
-        // 如果撞到墙
-        // =========================
+        Vector3 velocity =
+            rb.velocity;
 
-        if (touchingWall)
-        {
-            // 如果玩家正在往墙里面走，
-            // 就把这部分速度取消
-            float directionIntoWall =
-                Vector3.Dot(movement, -wallNormal);
+        velocity.x =
+            movement.x * moveSpeed;
 
-            if (directionIntoWall > 0)
-            {
-                movement =
-                    Vector3.ProjectOnPlane(
-                        movement,
-                        wallNormal
-                    );
-            }
-        }
+        velocity.z =
+            movement.z * moveSpeed;
 
-
-        // =========================
-        // 设置速度
-        // =========================
-
-        Vector3 velocity = rb.velocity;
-
-        velocity.x = movement.x * moveSpeed;
-        velocity.z = movement.z * moveSpeed;
-
-        rb.velocity = velocity;
-    }
-
-
-    void OnCollisionEnter(Collision collision)
-    {
-        CheckCollision(collision);
+        rb.velocity =
+            velocity;
     }
 
 
     void OnCollisionStay(Collision collision)
     {
-        CheckCollision(collision);
+        foreach (
+            ContactPoint contact
+            in collision.contacts
+        )
+        {
+            if (contact.normal.y > 0.5f)
+            {
+                isGrounded = true;
+
+                return;
+            }
+        }
+
+        isGrounded = false;
     }
 
 
     void OnCollisionExit(Collision collision)
     {
-        touchingWall = false;
-    }
-
-
-    void CheckCollision(Collision collision)
-    {
         isGrounded = false;
-        touchingWall = false;
-
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            Vector3 normal = contact.normal;
-
-            // 地面
-            if (normal.y > 0.5f)
-            {
-                isGrounded = true;
-            }
-
-            // 墙
-            if (Mathf.Abs(normal.y) < 0.5f)
-            {
-                touchingWall = true;
-                wallNormal = normal;
-            }
-        }
     }
 }
