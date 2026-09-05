@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Fishingrodmanager : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,9 +17,24 @@ public class Fishingrodmanager : MonoBehaviour
         if (Input.GetKey(KeyCode.E)) 
         {
             //动画
+            
             //gameObject.GetComponent<Animator>().enabled = false;
             gameObject.GetComponent<Animator>().enabled = true;
+
+            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+            {
+                gameObject.GetComponent<Animator>().Play("抛竿", 0, 0);
+            } else
+            {
+
+            }
+            
             //鱼鳔飞出
         }
+    }
+
+    public void function()
+    {
+        //gameObject.GetComponent<Animator>().SetBool("Reset", true);
     }
 }
