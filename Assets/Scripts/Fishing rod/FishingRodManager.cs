@@ -24,9 +24,6 @@ public class Fishingrodmanager : MonoBehaviour
             if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
             {
                 gameObject.GetComponent<Animator>().Play("抛竿", 0, 0);
-            } else
-            {
-
             }
             
             //鱼鳔飞出
