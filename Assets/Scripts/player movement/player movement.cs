@@ -71,9 +71,14 @@ public class PlayerController : MonoBehaviour
         // 跳跃
         // =====================
 
+        // 正在玩钓鱼小游戏时
+        // 不允许玩家跳跃
         if (
+            !FishingMinigame.IsPlaying
+            &&
             Input.GetKeyDown(KeyCode.Space)
-            && isGrounded
+            &&
+            isGrounded
         )
         {
             rb.AddForce(
