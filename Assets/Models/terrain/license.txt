@@ -1,0 +1,11 @@
+Model Information:
+* title:	Terrain Dristibute GN
+* source:	https://sketchfab.com/3d-models/terrain-dristibute-gn-0a735e22d6484d0aa327c0dfad846743
+* author:	rfidalgouci (https://sketchfab.com/RandyGF)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Terrain Dristibute GN" (https://sketchfab.com/3d-models/terrain-dristibute-gn-0a735e22d6484d0aa327c0dfad846743) by rfidalgouci (https://sketchfab.com/RandyGF) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
