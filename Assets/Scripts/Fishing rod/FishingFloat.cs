@@ -19,9 +19,11 @@ public class FishingFloat : MonoBehaviour
 
     private Coroutine biteCoroutine;
 
+    private float waterHeight;
+
 
     // ==================================================
-    // 鱼漂每次重新出现时自动执行
+    // 鱼漂重新出现
     // ==================================================
 
     void OnEnable()
@@ -34,14 +36,12 @@ public class FishingFloat : MonoBehaviour
         isOnWater = false;
 
         rb.isKinematic = false;
-
         rb.useGravity = true;
 
         rb.constraints =
             RigidbodyConstraints.None;
 
         rb.velocity = Vector3.zero;
-
         rb.angularVelocity = Vector3.zero;
     }
 
@@ -56,38 +56,106 @@ public class FishingFloat : MonoBehaviour
 
 
     // ==================================================
-    // 碰到水
+    // 普通碰撞
     // ==================================================
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Water"))
-        {
-            StartFishing();
-        }
+        // ------------------------------
+        // Ground
+        // ------------------------------
 
-        if (collision.gameObject.CompareTag("Ground"))
+        if (IsGround(collision.collider))
         {
             gameObject.SetActive(false);
+            return;
+        }
+
+
+        // ------------------------------
+        // Water
+        // ------------------------------
+
+        if (IsWater(collision.collider))
+        {
+            waterHeight =
+                collision.collider.bounds.max.y;
+
+            StartFishing();
         }
     }
 
 
     // ==================================================
-    // 如果 Water 是 Trigger
+    // Trigger
     // ==================================================
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Water"))
-        {
-            StartFishing();
-        }
+        // ------------------------------
+        // Ground
+        // ------------------------------
 
-        if (other.CompareTag("Ground"))
+        if (IsGround(other))
         {
             gameObject.SetActive(false);
+            return;
         }
+
+
+        // ------------------------------
+        // Water
+        // ------------------------------
+
+        if (IsWater(other))
+        {
+            waterHeight =
+                other.bounds.max.y;
+
+            StartFishing();
+        }
+    }
+
+
+    // ==================================================
+    // 判断是不是 Ground
+    // ==================================================
+
+    bool IsGround(Collider collider)
+    {
+        // Collider 自己是 Ground
+        if (collider.CompareTag("Ground"))
+        {
+            return true;
+        }
+
+        // Collider 所属的父物体是 Ground
+        if (collider.transform.root.CompareTag("Ground"))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    // ==================================================
+    // 判断是不是 Water
+    // ==================================================
+
+    bool IsWater(Collider collider)
+    {
+        if (collider.CompareTag("Water"))
+        {
+            return true;
+        }
+
+        if (collider.transform.root.CompareTag("Water"))
+        {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -97,7 +165,6 @@ public class FishingFloat : MonoBehaviour
 
     private void StartFishing()
     {
-        // 已经在水里，不重复触发
         if (isOnWater)
         {
             return;
@@ -105,36 +172,45 @@ public class FishingFloat : MonoBehaviour
 
         isOnWater = true;
 
-
-        // =========================
-        // 停止鱼漂运动
-        // =========================
-
         rb.velocity = Vector3.zero;
-
         rb.angularVelocity = Vector3.zero;
 
-
-        // =========================
-        // 关闭重力
-        // =========================
-
         rb.useGravity = false;
-
-
-        // =========================
-        // 防止鱼漂旋转
-        // =========================
 
         rb.constraints =
             RigidbodyConstraints.FreezeRotation;
 
+        Vector3 position =
+            transform.position;
 
-        // =========================
-        // 开始等待鱼咬钩
-        // =========================
+        position.y =
+            waterHeight;
+
+        transform.position =
+            position;
 
         StartWaitingForFish();
+    }
+
+
+    // ==================================================
+    // 保持鱼漂在水面
+    // ==================================================
+
+    void FixedUpdate()
+    {
+        if (!isOnWater)
+        {
+            return;
+        }
+
+        Vector3 position =
+            rb.position;
+
+        position.y =
+            waterHeight;
+
+        rb.MovePosition(position);
     }
 
 
@@ -150,7 +226,9 @@ public class FishingFloat : MonoBehaviour
         }
 
         biteCoroutine =
-            StartCoroutine(WaitForFish());
+            StartCoroutine(
+                WaitForFish()
+            );
     }
 
 
@@ -170,17 +248,24 @@ public class FishingFloat : MonoBehaviour
             "鱼漂已经落水，等待鱼咬钩……"
         );
 
-
         yield return
-            new WaitForSeconds(waitTime);
+            new WaitForSeconds(
+                waitTime
+            );
 
+        if (!gameObject.activeSelf)
+        {
+            yield break;
+        }
 
-        Debug.Log("有鱼咬钩！");
+        if (!isOnWater)
+        {
+            yield break;
+        }
 
-
-        // =========================
-        // 鱼竿弯曲动画
-        // =========================
+        Debug.Log(
+            "有鱼咬钩！"
+        );
 
         if (fishingRodAnimator != null)
         {
@@ -190,11 +275,6 @@ public class FishingFloat : MonoBehaviour
                 0
             );
         }
-
-
-        // =========================
-        // 开始小游戏
-        // =========================
 
         if (fishingMinigame != null)
         {
@@ -210,21 +290,18 @@ public class FishingFloat : MonoBehaviour
 
 
     // ==================================================
-    // 小游戏失败后调用
+    // 小游戏失败
     // ==================================================
 
     public void ContinueFishing()
     {
-        // 鱼漂还在水里
         if (!gameObject.activeSelf)
         {
             return;
         }
 
-        // 保持在水里
         isOnWater = true;
 
-        // 重新等待下一条鱼
         StartWaitingForFish();
     }
 }

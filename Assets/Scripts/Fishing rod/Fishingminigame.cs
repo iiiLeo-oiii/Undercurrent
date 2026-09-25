@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class FishingMinigame : MonoBehaviour
 {
@@ -27,6 +27,11 @@ public class FishingMinigame : MonoBehaviour
     private static bool isPlaying = false;
 
 
+    // ==================================================
+    // 告诉其他脚本：
+    // 现在是不是正在玩小游戏
+    // ==================================================
+
     public static bool IsPlaying
     {
         get
@@ -35,6 +40,10 @@ public class FishingMinigame : MonoBehaviour
         }
     }
 
+
+    // ==================================================
+    // 初始化
+    // ==================================================
 
     void Start()
     {
@@ -47,6 +56,10 @@ public class FishingMinigame : MonoBehaviour
     }
 
 
+    // ==================================================
+    // 游戏运行
+    // ==================================================
+
     void Update()
     {
         if (!isPlaying)
@@ -55,6 +68,7 @@ public class FishingMinigame : MonoBehaviour
         }
 
 
+        // 倒计时
         currentTime -= Time.deltaTime;
 
 
@@ -65,28 +79,19 @@ public class FishingMinigame : MonoBehaviour
         }
 
 
-        // =========================
-        // 自动下降
-        // =========================
-
+        // 标记自动下降
         playerY -=
             fallSpeed * Time.deltaTime;
 
 
-        // =========================
         // 空格上升
-        // =========================
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             playerY += jumpForce;
         }
 
 
-        // =========================
         // 限制范围
-        // =========================
-
         float top =
             fishingBar.rect.height / 2f;
 
@@ -102,6 +107,7 @@ public class FishingMinigame : MonoBehaviour
             );
 
 
+        // 更新标记
         playerMarker.anchoredPosition =
             new Vector2(
                 playerMarker.anchoredPosition.x,
@@ -109,16 +115,17 @@ public class FishingMinigame : MonoBehaviour
             );
 
 
-        // =========================
         // 时间结束
-        // =========================
-
         if (currentTime <= 0f)
         {
             EndGame();
         }
     }
 
+
+    // ==================================================
+    // 开始小游戏
+    // ==================================================
 
     public void StartGame()
     {
@@ -162,6 +169,31 @@ public class FishingMinigame : MonoBehaviour
     }
 
 
+    // ==================================================
+    // 按 E 取消小游戏
+    // ==================================================
+
+    public void CancelGame()
+    {
+        isPlaying = false;
+
+
+        if (fishingUI != null)
+        {
+            fishingUI.SetActive(false);
+        }
+
+
+        Debug.Log(
+            "钓鱼小游戏已取消。"
+        );
+    }
+
+
+    // ==================================================
+    // 小游戏正常结束
+    // ==================================================
+
     void EndGame()
     {
         isPlaying = false;
@@ -185,15 +217,16 @@ public class FishingMinigame : MonoBehaviour
             greenPosition + greenHeight / 2f;
 
 
-        // ==================================================
+        // =========================
         // 成功
-        // ==================================================
+        // =========================
 
         if (fishingSuccess)
         {
             Debug.Log("钓鱼成功！");
 
-            // 把鱼漂拉起来
+
+            // 鱼漂消失
             if (fishingFloat != null)
             {
                 fishingFloat.gameObject.SetActive(false);
@@ -201,13 +234,14 @@ public class FishingMinigame : MonoBehaviour
         }
 
 
-        // ==================================================
+        // =========================
         // 失败
-        // ==================================================
+        // =========================
 
         else
         {
             Debug.Log("钓鱼失败！");
+
 
             // 鱼漂继续留在水里
             if (fishingFloat != null)
@@ -217,7 +251,7 @@ public class FishingMinigame : MonoBehaviour
         }
 
 
-        // 隐藏UI
+        // 隐藏 UI
         if (fishingUI != null)
         {
             fishingUI.SetActive(false);
