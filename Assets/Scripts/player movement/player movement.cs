@@ -40,6 +40,9 @@ public class PlayerController : MonoBehaviour
     public FishingMinigame fishingMinigame;
     public float maxFishingDistance = 30f;
 
+    [Header("对话")]
+    public bool dialogueLocked = false;
+
     private Rigidbody rb;
     private CapsuleCollider capsuleCollider;
 
@@ -85,6 +88,35 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // =====================================================
+        // 对话锁定期间
+        // =====================================================
+
+        if (dialogueLocked)
+        {
+            // 停止水平移动
+            rb.velocity = new Vector3(
+                0f,
+                rb.velocity.y,
+                0f
+            );
+
+            isSprinting = false;
+
+            // 隐藏体力条
+            if (staminaUI != null)
+                staminaUI.SetActive(false);
+
+            if (staminaSlider != null)
+                staminaSlider.gameObject.SetActive(false);
+
+            return;
+        }
+
+        // =====================================================
+        // 正常操作
+        // =====================================================
+
         HandleMouseLook();
         HandleCrouch();
         HandleSprint();
@@ -104,6 +136,17 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (dialogueLocked)
+        {
+            rb.velocity = new Vector3(
+                0f,
+                rb.velocity.y,
+                0f
+            );
+
+            return;
+        }
+
         HandleMovement();
     }
 
@@ -150,7 +193,6 @@ public class PlayerController : MonoBehaviour
             {
                 if (hit.collider.gameObject != gameObject)
                 {
-                    // 沿着墙面滑动
                     desiredVelocity =
                         Vector3.ProjectOnPlane(
                             desiredVelocity,
@@ -181,7 +223,6 @@ public class PlayerController : MonoBehaviour
             ContactPoint contact =
                 collision.GetContact(i);
 
-            // 只有表面朝上的碰撞才算地面
             if (contact.normal.y > 0.5f)
             {
                 isGrounded = true;
@@ -205,7 +246,6 @@ public class PlayerController : MonoBehaviour
 
         Vector3 velocity = rb.velocity;
 
-        // 清除向下速度
         if (velocity.y < 0f)
             velocity.y = 0f;
 
@@ -258,7 +298,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // =========================================================
-    // 鼠标
+    // 鼠标视角
     // =========================================================
 
     void HandleMouseLook()
