@@ -3,17 +3,20 @@ using UnityEngine;
 
 public class Fishingrodmanager : MonoBehaviour
 {
+    [Header("Fishing Float")]
     public GameObject fishingFloat;
 
+    [Header("Cast Point")]
     public Transform castPoint;
 
+    [Header("Cast Force")]
     public float forwardForce = 8f;
     public float upwardForce = 3f;
 
-    // 抛竿动画
+    [Header("Cast Animation")]
     public AnimationClip castAnimation;
 
-    // 钓鱼小游戏
+    [Header("Fishing Minigame")]
     public FishingMinigame fishingMinigame;
 
     private Animator animator;
@@ -21,107 +24,189 @@ public class Fishingrodmanager : MonoBehaviour
     // 防止抛竿动画期间再次按 E
     private bool isCasting = false;
 
+    // 是否已经拿到鱼竿
+    public bool hasRod = false;
+
+
+    // ==================================================
+    // 初始化
+    // ==================================================
 
     void Start()
     {
         animator = GetComponent<Animator>();
 
         // 游戏开始时隐藏鱼漂
-        fishingFloat.SetActive(false);
+        if (fishingFloat != null)
+        {
+            fishingFloat.SetActive(false);
+        }
+
+        // 注意：
+        // 这里不要再写 hasRod = false;
+        //
+        // 因为 HandRod 一开始是关闭的，
+        // 玩家捡起它时才会启动这个脚本。
     }
 
 
+    // ==================================================
+    // 玩家输入
+    // ==================================================
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && !isCasting)
+        // 没拿到鱼竿
+        if (!hasRod)
         {
-            // ==================================================
-            // 如果正在玩钓鱼小游戏
-            // 按 E = 取消当前小游戏 + 重新抛竿
-            // ==================================================
+            return;
+        }
 
+        // 正在抛竿
+        if (isCasting)
+        {
+            return;
+        }
+
+        // 按 E
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // 如果正在玩小游戏
             if (FishingMinigame.IsPlaying)
             {
                 if (fishingMinigame != null)
                 {
                     fishingMinigame.CancelGame();
                 }
-            }
 
-            // ==================================================
-            // 重新抛竿
-            // ==================================================
+                return;
+            }
 
             StartCoroutine(CastFishingRod());
         }
     }
 
 
+    // ==================================================
+    // 抛竿
+    // ==================================================
+
     IEnumerator CastFishingRod()
     {
-        // ==================================================
-        // 一按 E 立刻锁住
-        // 防止动画播放期间再次按 E
-        // ==================================================
-
         isCasting = true;
 
 
-        // ==================================================
+        // --------------------------------------------------
+        // 检查必要组件
+        // --------------------------------------------------
+
+        if (fishingFloat == null)
+        {
+            Debug.LogError(
+                "Fishingrodmanager：没有设置 Fishing Float！"
+            );
+
+            isCasting = false;
+            yield break;
+        }
+
+        if (castPoint == null)
+        {
+            Debug.LogError(
+                "Fishingrodmanager：没有设置 Cast Point！"
+            );
+
+            isCasting = false;
+            yield break;
+        }
+
+        if (animator == null)
+        {
+            Debug.LogError(
+                "Fishingrodmanager：HandRod 上没有 Animator！"
+            );
+
+            isCasting = false;
+            yield break;
+        }
+
+        if (castAnimation == null)
+        {
+            Debug.LogError(
+                "Fishingrodmanager：没有设置 Cast Animation！"
+            );
+
+            isCasting = false;
+            yield break;
+        }
+
+
+        // --------------------------------------------------
         // 关闭旧鱼漂
-        // ==================================================
+        // --------------------------------------------------
 
         fishingFloat.SetActive(false);
 
 
-        // ==================================================
-        // 1. 播放抛竿动画
-        // ==================================================
+        // --------------------------------------------------
+        // 播放抛竿动画
+        // --------------------------------------------------
 
         animator.enabled = true;
 
         animator.Play(
             "抛竿",
             0,
-            0
+            0f
         );
 
 
-        // ==================================================
-        // 2. 等待抛竿动画结束
-        // ==================================================
+        // --------------------------------------------------
+        // 等待动画结束
+        // --------------------------------------------------
 
         yield return new WaitForSeconds(
             castAnimation.length
         );
 
 
-        // ==================================================
-        // 3. 鱼漂出现
-        // ==================================================
+        // --------------------------------------------------
+        // 鱼漂出现
+        // --------------------------------------------------
 
         fishingFloat.SetActive(true);
 
 
-        // ==================================================
-        // 4. 鱼漂放到鱼竿尖端
-        // ==================================================
+        // --------------------------------------------------
+        // 鱼漂放到鱼竿尖端
+        // --------------------------------------------------
 
         fishingFloat.transform.position =
             castPoint.position;
 
 
-        // ==================================================
-        // 5. 获取 Rigidbody
-        // ==================================================
+        // --------------------------------------------------
+        // 获取 Rigidbody
+        // --------------------------------------------------
 
         Rigidbody floatRb =
             fishingFloat.GetComponent<Rigidbody>();
 
 
-        // ==================================================
-        // 6. 重置物理状态
-        // ==================================================
+        if (floatRb == null)
+        {
+            Debug.LogError(
+                "Fishingrodmanager：FishingFloat 没有 Rigidbody！"
+            );
+
+            isCasting = false;
+            yield break;
+        }
+
+
+        // --------------------------------------------------
+        // 重置物理
+        // --------------------------------------------------
 
         floatRb.isKinematic = false;
 
@@ -137,9 +222,9 @@ public class Fishingrodmanager : MonoBehaviour
             Vector3.zero;
 
 
-        // ==================================================
-        // 7. 抛出去
-        // ==================================================
+        // --------------------------------------------------
+        // 计算抛竿方向
+        // --------------------------------------------------
 
         Vector3 castDirection =
             castPoint.forward * forwardForce
@@ -147,22 +232,26 @@ public class Fishingrodmanager : MonoBehaviour
             Vector3.up * upwardForce;
 
 
+        // --------------------------------------------------
+        // 抛出去
+        // --------------------------------------------------
+
         floatRb.AddForce(
             castDirection,
             ForceMode.VelocityChange
         );
 
 
-        // ==================================================
-        // 8. 抛竿完成
-        // ==================================================
+        // --------------------------------------------------
+        // 抛竿完成
+        // --------------------------------------------------
 
         isCasting = false;
     }
 
 
     // ==================================================
-    // 鱼漂碰到地面
+    // 鱼漂 / 鱼竿碰到 Ground
     // ==================================================
 
     private void OnCollisionEnter(
@@ -173,7 +262,10 @@ public class Fishingrodmanager : MonoBehaviour
             collision.gameObject.CompareTag("Ground")
         )
         {
-            fishingFloat.SetActive(false);
+            if (fishingFloat != null)
+            {
+                fishingFloat.SetActive(false);
+            }
         }
     }
 }

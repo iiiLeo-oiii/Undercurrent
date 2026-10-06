@@ -9,6 +9,9 @@ public class FishingFloat : MonoBehaviour
     [Header("Fishing Rod Animator")]
     public Animator fishingRodAnimator;
 
+    [Header("Fishing Rod Manager")]
+    public Fishingrodmanager fishingRodManager;
+
     [Header("Fish Bite Time")]
     public float minBiteTime = 2f;
     public float maxBiteTime = 6f;
@@ -23,7 +26,17 @@ public class FishingFloat : MonoBehaviour
 
 
     // ==================================================
-    // 鱼漂重新出现
+    // 初始化
+    // ==================================================
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+
+    // ==================================================
+    // 鱼漂被打开
     // ==================================================
 
     void OnEnable()
@@ -33,6 +46,18 @@ public class FishingFloat : MonoBehaviour
             rb = GetComponent<Rigidbody>();
         }
 
+        // 没拿到鱼竿，不允许鱼漂工作
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            StopFishingFloat();
+
+            return;
+        }
+
+        // 拿到鱼竿后正常初始化
         isOnWater = false;
 
         rb.isKinematic = false;
@@ -46,11 +71,30 @@ public class FishingFloat : MonoBehaviour
     }
 
 
-    void Start()
+    // ==================================================
+    // 停止鱼漂
+    // ==================================================
+
+    void StopFishingFloat()
     {
-        if (rb == null)
+        isOnWater = false;
+
+        if (biteCoroutine != null)
         {
-            rb = GetComponent<Rigidbody>();
+            StopCoroutine(biteCoroutine);
+            biteCoroutine = null;
+        }
+
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+
+            rb.isKinematic = true;
+            rb.useGravity = false;
+
+            rb.constraints =
+                RigidbodyConstraints.FreezeAll;
         }
     }
 
@@ -61,6 +105,16 @@ public class FishingFloat : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // 没拿鱼竿，不处理任何事情
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            return;
+        }
+
+
         // ------------------------------
         // Ground
         // ------------------------------
@@ -92,6 +146,16 @@ public class FishingFloat : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // 没拿鱼竿，不处理任何事情
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            return;
+        }
+
+
         // ------------------------------
         // Ground
         // ------------------------------
@@ -123,13 +187,11 @@ public class FishingFloat : MonoBehaviour
 
     bool IsGround(Collider collider)
     {
-        // Collider 自己是 Ground
         if (collider.CompareTag("Ground"))
         {
             return true;
         }
 
-        // Collider 所属的父物体是 Ground
         if (collider.transform.root.CompareTag("Ground"))
         {
             return true;
@@ -165,6 +227,14 @@ public class FishingFloat : MonoBehaviour
 
     private void StartFishing()
     {
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            return;
+        }
+
         if (isOnWater)
         {
             return;
@@ -253,6 +323,7 @@ public class FishingFloat : MonoBehaviour
                 waitTime
             );
 
+
         if (!gameObject.activeSelf)
         {
             yield break;
@@ -263,9 +334,19 @@ public class FishingFloat : MonoBehaviour
             yield break;
         }
 
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            yield break;
+        }
+
+
         Debug.Log(
             "有鱼咬钩！"
         );
+
 
         if (fishingRodAnimator != null)
         {
@@ -275,6 +356,7 @@ public class FishingFloat : MonoBehaviour
                 0
             );
         }
+
 
         if (fishingMinigame != null)
         {
@@ -297,6 +379,15 @@ public class FishingFloat : MonoBehaviour
     {
         if (!gameObject.activeSelf)
         {
+            return;
+        }
+
+        if (
+            fishingRodManager != null &&
+            !fishingRodManager.hasRod
+        )
+        {
+            gameObject.SetActive(false);
             return;
         }
 

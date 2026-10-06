@@ -15,7 +15,6 @@ public class FishingMinigame : MonoBehaviour
 
     [Header("Game Settings")]
     public float gameTime = 10f;
-
     public float fallSpeed = 80f;
 
     // 空格每次上升距离
@@ -25,6 +24,12 @@ public class FishingMinigame : MonoBehaviour
     private float playerY;
 
     private static bool isPlaying = false;
+
+    // ==================================================
+    // 是否已经拿到鱼竿
+    // ==================================================
+
+    public bool canFish = false;
 
 
     // ==================================================
@@ -53,6 +58,9 @@ public class FishingMinigame : MonoBehaviour
         }
 
         isPlaying = false;
+
+        // 游戏开始时禁止钓鱼
+        canFish = false;
     }
 
 
@@ -67,10 +75,7 @@ public class FishingMinigame : MonoBehaviour
             return;
         }
 
-
-        // 倒计时
         currentTime -= Time.deltaTime;
-
 
         if (timerText != null)
         {
@@ -78,26 +83,19 @@ public class FishingMinigame : MonoBehaviour
                 Mathf.Ceil(currentTime).ToString();
         }
 
-
-        // 标记自动下降
         playerY -=
             fallSpeed * Time.deltaTime;
 
-
-        // 空格上升
         if (Input.GetKeyDown(KeyCode.Space))
         {
             playerY += jumpForce;
         }
 
-
-        // 限制范围
         float top =
             fishingBar.rect.height / 2f;
 
         float bottom =
             -fishingBar.rect.height / 2f;
-
 
         playerY =
             Mathf.Clamp(
@@ -106,16 +104,12 @@ public class FishingMinigame : MonoBehaviour
                 top
             );
 
-
-        // 更新标记
         playerMarker.anchoredPosition =
             new Vector2(
                 playerMarker.anchoredPosition.x,
                 playerY
             );
 
-
-        // 时间结束
         if (currentTime <= 0f)
         {
             EndGame();
@@ -129,6 +123,12 @@ public class FishingMinigame : MonoBehaviour
 
     public void StartGame()
     {
+        // 没有鱼竿，绝对不能开始
+        if (!canFish)
+        {
+            return;
+        }
+
         if (fishingUI == null)
         {
             Debug.LogError(
@@ -138,7 +138,6 @@ public class FishingMinigame : MonoBehaviour
             return;
         }
 
-
         fishingUI.SetActive(true);
 
         isPlaying = true;
@@ -146,7 +145,6 @@ public class FishingMinigame : MonoBehaviour
         currentTime = gameTime;
 
         playerY = 0f;
-
 
         if (playerMarker != null)
         {
@@ -157,13 +155,11 @@ public class FishingMinigame : MonoBehaviour
                 );
         }
 
-
         if (timerText != null)
         {
             timerText.text =
                 Mathf.Ceil(currentTime).ToString();
         }
-
 
         Debug.Log("钓鱼小游戏开始！");
     }
@@ -177,12 +173,10 @@ public class FishingMinigame : MonoBehaviour
     {
         isPlaying = false;
 
-
         if (fishingUI != null)
         {
             fishingUI.SetActive(false);
         }
-
 
         Debug.Log(
             "钓鱼小游戏已取消。"
@@ -198,7 +192,6 @@ public class FishingMinigame : MonoBehaviour
     {
         isPlaying = false;
 
-
         float playerPosition =
             playerMarker.anchoredPosition.y;
 
@@ -207,7 +200,6 @@ public class FishingMinigame : MonoBehaviour
 
         float greenHeight =
             greenZone.rect.height;
-
 
         bool fishingSuccess =
             playerPosition >=
@@ -225,8 +217,6 @@ public class FishingMinigame : MonoBehaviour
         {
             Debug.Log("钓鱼成功！");
 
-
-            // 鱼漂消失
             if (fishingFloat != null)
             {
                 fishingFloat.gameObject.SetActive(false);
@@ -242,8 +232,6 @@ public class FishingMinigame : MonoBehaviour
         {
             Debug.Log("钓鱼失败！");
 
-
-            // 鱼漂继续留在水里
             if (fishingFloat != null)
             {
                 fishingFloat.ContinueFishing();
