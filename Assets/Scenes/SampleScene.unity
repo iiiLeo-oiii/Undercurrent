@@ -1181,7 +1181,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278254847
-  m_fontColor: {r: 1, g: 0.98938024, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 0.98823535, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4309,7 +4309,7 @@ Transform:
   m_GameObject: {fileID: 1702057340}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 32.21, y: 9.63, z: 8.21}
+  m_LocalPosition: {x: 32.21, y: 9.38, z: 8.21}
   m_LocalScale: {x: 64.43552, y: 1, z: 60.605083}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4722,7 +4722,7 @@ GameObject:
   - component: {fileID: 2034920582}
   m_Layer: 0
   m_Name: collider boat
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5029,18 +5029,10 @@ MonoBehaviour:
   - i..
   - i have to go back home!
   dialogueList2:
-  - ...
-  - ........?
-  - is it...
-  - hallucination?
-  - ...
-  - where im i
-  - uhhh
-  - my head is really pounding
-  - uhhh
-  - right...
-  - i was about to fishing
-  - (press E to pick up a fishing rod)
+  - "\u7B2C\u4E8C\u6BB51"
+  - "\u7B2C\u4E8C\u6BB52"
+  - "\u7B2C\u4E8C\u6BB53"
+  - "\u7B2C\u4E8C\u6BB54"
   fadeDuration: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
