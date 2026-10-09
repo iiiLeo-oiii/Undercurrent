@@ -221,6 +221,7 @@ public class FishingMinigame : MonoBehaviour
             {
                 fishingFloat.gameObject.SetActive(false);
             }
+            GiveFishAfterSuccess();
         }
 
 
@@ -243,6 +244,27 @@ public class FishingMinigame : MonoBehaviour
         if (fishingUI != null)
         {
             fishingUI.SetActive(false);
+        }
+    }
+    // =========================
+    // 鱼类管理器
+    // =========================
+
+    [Header("Fish Holding Manager")]
+    public AfterFishHoldingManager afterFishHoldingManager;
+
+    // 钓鱼成功后调用，获得一条随机鱼
+    public void GiveFishAfterSuccess()
+    {
+        if (afterFishHoldingManager != null)
+        {
+            afterFishHoldingManager.CatchRandomFish();
+        }
+        else
+        {
+            Debug.LogError(
+                "FishingMinigame：没有设置 AfterFishHoldingManager！"
+            );
         }
     }
 }
