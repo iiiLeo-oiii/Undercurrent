@@ -258,7 +258,7 @@ public class FishingMinigame : MonoBehaviour
     {
         Debug.Log("GiveFishAfterSuccess 已执行");
 
-       
+
         if (afterFishHoldingManager != null)
         {
             afterFishHoldingManager.CatchRandomFish();
@@ -270,3 +270,4 @@ public class FishingMinigame : MonoBehaviour
             );
         }
     }
+}
