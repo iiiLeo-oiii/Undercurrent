@@ -1,3 +1,4 @@
+
 using TMPro;
 using UnityEngine;
 
@@ -20,36 +21,25 @@ public class FishingMinigame : MonoBehaviour
     // 空格每次上升距离
     public float jumpForce = 12f;
 
+    [Header("Green Zone Random Position")]
+    [Tooltip("绿色区域随机位置的上下边界留白，单位为 UI 像素")]
+    public float greenZoneEdgePadding = 5f;
+
     private float currentTime;
     private float playerY;
 
     private static bool isPlaying = false;
 
-    // ==================================================
     // 是否已经拿到鱼竿
-    // ==================================================
-
     public bool canFish = false;
 
-
-    // ==================================================
-    // 告诉其他脚本：
-    // 现在是不是正在玩小游戏
-    // ==================================================
-
+    // 告诉其他脚本现在是不是正在玩小游戏
     public static bool IsPlaying
     {
-        get
-        {
-            return isPlaying;
-        }
+        get { return isPlaying; }
     }
 
-
-    // ==================================================
     // 初始化
-    // ==================================================
-
     void Start()
     {
         if (fishingUI != null)
@@ -63,11 +53,7 @@ public class FishingMinigame : MonoBehaviour
         canFish = false;
     }
 
-
-    // ==================================================
     // 游戏运行
-    // ==================================================
-
     void Update()
     {
         if (!isPlaying)
@@ -79,36 +65,25 @@ public class FishingMinigame : MonoBehaviour
 
         if (timerText != null)
         {
-            timerText.text =
-                Mathf.Ceil(currentTime).ToString();
+            timerText.text = Mathf.Ceil(currentTime).ToString();
         }
 
-        playerY -=
-            fallSpeed * Time.deltaTime;
+        playerY -= fallSpeed * Time.deltaTime;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             playerY += jumpForce;
         }
 
-        float top =
-            fishingBar.rect.height / 2f;
+        float top = fishingBar.rect.height / 2f;
+        float bottom = -fishingBar.rect.height / 2f;
 
-        float bottom =
-            -fishingBar.rect.height / 2f;
+        playerY = Mathf.Clamp(playerY, bottom, top);
 
-        playerY =
-            Mathf.Clamp(
-                playerY,
-                bottom,
-                top
-            );
-
-        playerMarker.anchoredPosition =
-            new Vector2(
-                playerMarker.anchoredPosition.x,
-                playerY
-            );
+        playerMarker.anchoredPosition = new Vector2(
+            playerMarker.anchoredPosition.x,
+            playerY
+        );
 
         if (currentTime <= 0f)
         {
@@ -116,14 +91,53 @@ public class FishingMinigame : MonoBehaviour
         }
     }
 
+    // 每次开始小游戏时随机移动绿色区域
+    void RandomizeGreenZonePosition()
+    {
+        if (fishingBar == null || greenZone == null)
+        {
+            Debug.LogError(
+                "FishingMinigame：请设置 Fishing Bar 和 Green Zone！"
+            );
+            return;
+        }
 
-    // ==================================================
+        float barHeight = fishingBar.rect.height;
+        float greenHeight = greenZone.rect.height;
+
+        // 根据绿色区域自身高度计算可移动范围，
+        // 确保绿色区域完整留在钓鱼条内部
+        float padding = Mathf.Max(0f, greenZoneEdgePadding);
+
+        float minY = -barHeight / 2f + greenHeight / 2f + padding;
+        float maxY = barHeight / 2f - greenHeight / 2f - padding;
+
+        // 如果绿色区域太大，就让它位于钓鱼条中央
+        if (minY > maxY)
+        {
+            minY = 0f;
+            maxY = 0f;
+
+            Debug.LogWarning(
+                "绿色区域过高，无法随机移动，请检查 UI 尺寸。"
+            );
+        }
+
+        float randomY = Random.Range(minY, maxY);
+
+        // 只改变 Y 坐标，保留原本的 X 坐标
+        greenZone.anchoredPosition = new Vector2(
+            greenZone.anchoredPosition.x,
+            randomY
+        );
+
+        Debug.Log("本次绿色目标区域位置：" + randomY);
+    }
+
     // 开始小游戏
-    // ==================================================
-
     public void StartGame()
     {
-        // 没有鱼竿，绝对不能开始
+        // 没有鱼竿，不能开始
         if (!canFish)
         {
             return;
@@ -134,41 +148,36 @@ public class FishingMinigame : MonoBehaviour
             Debug.LogError(
                 "FishingMinigame：没有设置 Fishing UI！"
             );
-
             return;
         }
+
+        // 每次开始都随机生成新的绿色区域位置
+        RandomizeGreenZonePosition();
 
         fishingUI.SetActive(true);
 
         isPlaying = true;
 
         currentTime = gameTime;
-
         playerY = 0f;
 
         if (playerMarker != null)
         {
-            playerMarker.anchoredPosition =
-                new Vector2(
-                    playerMarker.anchoredPosition.x,
-                    playerY
-                );
+            playerMarker.anchoredPosition = new Vector2(
+                playerMarker.anchoredPosition.x,
+                playerY
+            );
         }
 
         if (timerText != null)
         {
-            timerText.text =
-                Mathf.Ceil(currentTime).ToString();
+            timerText.text = Mathf.Ceil(currentTime).ToString();
         }
 
         Debug.Log("钓鱼小游戏开始！");
     }
 
-
-    // ==================================================
     // 按 E 取消小游戏
-    // ==================================================
-
     public void CancelGame()
     {
         isPlaying = false;
@@ -178,41 +187,24 @@ public class FishingMinigame : MonoBehaviour
             fishingUI.SetActive(false);
         }
 
-        Debug.Log(
-            "钓鱼小游戏已取消。"
-        );
+        Debug.Log("钓鱼小游戏已取消。");
     }
 
-
-    // ==================================================
     // 小游戏正常结束
-    // ==================================================
-
     void EndGame()
     {
         isPlaying = false;
 
-        float playerPosition =
-            playerMarker.anchoredPosition.y;
-
-        float greenPosition =
-            greenZone.anchoredPosition.y;
-
-        float greenHeight =
-            greenZone.rect.height;
+        float playerPosition = playerMarker.anchoredPosition.y;
+        float greenPosition = greenZone.anchoredPosition.y;
+        float greenHeight = greenZone.rect.height;
 
         bool fishingSuccess =
-            playerPosition >=
-            greenPosition - greenHeight / 2f
+            playerPosition >= greenPosition - greenHeight / 2f
             &&
-            playerPosition <=
-            greenPosition + greenHeight / 2f;
+            playerPosition <= greenPosition + greenHeight / 2f;
 
-
-        // =========================
         // 成功
-        // =========================
-
         if (fishingSuccess)
         {
             Debug.Log("钓鱼成功！");
@@ -221,14 +213,10 @@ public class FishingMinigame : MonoBehaviour
             {
                 fishingFloat.gameObject.SetActive(false);
             }
+
             GiveFishAfterSuccess();
         }
-
-
-        // =========================
         // 失败
-        // =========================
-
         else
         {
             Debug.Log("钓鱼失败！");
@@ -239,17 +227,14 @@ public class FishingMinigame : MonoBehaviour
             }
         }
 
-
         // 隐藏 UI
         if (fishingUI != null)
         {
             fishingUI.SetActive(false);
         }
     }
-    // =========================
-    // 鱼类管理器
-    // =========================
 
+    // 鱼类管理器
     [Header("Fish Holding Manager")]
     public AfterFishHoldingManager afterFishHoldingManager;
 
@@ -257,7 +242,6 @@ public class FishingMinigame : MonoBehaviour
     public void GiveFishAfterSuccess()
     {
         Debug.Log("GiveFishAfterSuccess 已执行");
-
 
         if (afterFishHoldingManager != null)
         {
