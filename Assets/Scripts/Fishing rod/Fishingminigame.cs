@@ -256,6 +256,9 @@ public class FishingMinigame : MonoBehaviour
     // 钓鱼成功后调用，获得一条随机鱼
     public void GiveFishAfterSuccess()
     {
+        Debug.Log("GiveFishAfterSuccess 已执行");
+
+       
         if (afterFishHoldingManager != null)
         {
             afterFishHoldingManager.CatchRandomFish();
@@ -267,4 +270,3 @@ public class FishingMinigame : MonoBehaviour
             );
         }
     }
-}
