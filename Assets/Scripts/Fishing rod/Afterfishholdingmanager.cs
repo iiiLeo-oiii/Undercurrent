@@ -46,8 +46,11 @@ public class AfterFishHoldingManager : MonoBehaviour
     private int currentFishIndex = -1;
     private int lastFishIndex = -1;
 
-    // 使用独立随机数生成器，避免完全依赖 Unity 全局随机数状态
     private System.Random fishRandom;
+
+    private GameObject returningFish;
+    private int returningFishIndex = -1;
+    private Vector3 returningFishScale;
 
     void Awake()
     {
@@ -57,35 +60,24 @@ public class AfterFishHoldingManager : MonoBehaviour
     void Start()
     {
         if (maxRandomScale < minRandomScale)
-        {
             maxRandomScale = minRandomScale;
-        }
 
-        // 隐藏场景中的鱼模板，实际获得鱼时再复制
         foreach (FishEntry entry in fishList)
         {
             if (entry != null && entry.fishModel != null)
-            {
                 entry.fishModel.SetActive(false);
-            }
         }
     }
 
     void Update()
     {
-        // 钓鱼小游戏进行时，不处理 Q 键
-        if (FishingMinigame.IsPlaying)
-        {
+        if (FishingMinigame.IsPlaying || returningFish != null)
             return;
-        }
 
         if (Input.GetKeyDown(KeyCode.Q))
-        {
             HandleQKey();
-        }
     }
 
-    // Q 键：优先捡附近的鱼，否则放下手中的鱼
     void HandleQKey()
     {
         FishWorldPickup nearbyFish = FindNearestDroppedFish();
@@ -97,13 +89,9 @@ public class AfterFishHoldingManager : MonoBehaviour
         }
 
         if (IsHoldingFish())
-        {
             DropCurrentFish();
-        }
         else
-        {
             Debug.Log("附近没有可以捡起的鱼。");
-        }
     }
 
     bool IsHoldingFish()
@@ -114,33 +102,16 @@ public class AfterFishHoldingManager : MonoBehaviour
             && currentFish.transform.parent == fishHoldPoint;
     }
 
-    // 钓鱼成功后获得随机鱼
+    // 保留原来的获得随机鱼功能
     public void CatchRandomFish()
     {
         if (fishHoldPoint == null)
         {
-            Debug.LogError(
-                "AfterFishHoldingManager：没有设置 Fish Hold Point！"
-            );
+            Debug.LogError("AfterFishHoldingManager：没有设置 Fish Hold Point！");
             return;
         }
 
-        if (fishList == null || fishList.Count == 0)
-        {
-            Debug.LogWarning("鱼类列表为空！");
-            return;
-        }
-
-        // 收集所有有效鱼的索引
-        List<int> validIndices = new List<int>();
-
-        for (int i = 0; i < fishList.Count; i++)
-        {
-            if (fishList[i] != null && fishList[i].fishModel != null)
-            {
-                validIndices.Add(i);
-            }
-        }
+        List<int> validIndices = GetValidFishIndices();
 
         if (validIndices.Count == 0)
         {
@@ -148,73 +119,156 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 如果存在多种鱼，尽量避免连续两次抽中同一条
-        if (validIndices.Count > 1 && validIndices.Contains(lastFishIndex))
-        {
-            validIndices.Remove(lastFishIndex);
-        }
+        int selectedIndex = SelectFishIndex(validIndices);
+        FishEntry entry = fishList[selectedIndex];
 
-        // 使用独立随机数选择鱼
-        int randomPosition = fishRandom.Next(0, validIndices.Count);
-        int selectedIndex = validIndices[randomPosition];
-
-        FishEntry selectedFish = fishList[selectedIndex];
-
-        Debug.Log(
-            "本次抽中鱼：索引 " + selectedIndex
-            + "，模板名称：" + selectedFish.fishModel.name
-        );
-
-        // 新鱼替换旧鱼：先将旧鱼放到地上
         DropCurrentFish();
 
-        // 复制场景模板
-        GameObject newFish = Instantiate(selectedFish.fishModel);
-        newFish.name = selectedFish.fishModel.name;
+        GameObject newFish = Instantiate(entry.fishModel);
+        newFish.name = entry.fishModel.name;
 
-        // 清理复制品上的地面物理组件
         RemoveWorldPhysics(newFish);
 
-        // 设置父物体及持鱼位置
         newFish.transform.SetParent(fishHoldPoint, false);
-        newFish.transform.localPosition = selectedFish.localPosition;
-        newFish.transform.localEulerAngles = selectedFish.localRotation;
-
-        // 先激活，再设置缩放，避免模型激活时的组件覆盖初始缩放
+        newFish.transform.localPosition = entry.localPosition;
+        newFish.transform.localEulerAngles = entry.localRotation;
         newFish.SetActive(true);
 
-        Vector3 finalScale;
-
-        if (selectedFish.randomizeScale)
-        {
-            int minScale = Mathf.Max(1, minRandomScale);
-            int maxScale = Mathf.Max(minScale, maxRandomScale);
-
-            // System.Random 的上限不包含在结果内，因此需要 +1
-            int randomScale = fishRandom.Next(minScale, maxScale + 1);
-
-            finalScale = Vector3.one * randomScale;
-
-            Debug.Log("本次随机缩放值：" + randomScale);
-        }
-        else
-        {
-            finalScale = selectedFish.localScale;
-        }
-
+        Vector3 finalScale = GetFishScale(entry);
         newFish.transform.localScale = finalScale;
 
         currentFish = newFish;
         currentFishIndex = selectedIndex;
         lastFishIndex = selectedIndex;
 
-        Debug.Log(
-            "获得鱼：" + currentFish.name
-            + "，最终缩放：" + currentFish.transform.localScale
-        );
+        Debug.Log("获得鱼：" + currentFish.name);
     }
 
-    // 放下手中的鱼
+    // 创建飞回途中的鱼：这个实例最后也会成为手持的鱼
+    public GameObject CreateFishForReturn(Vector3 startPosition)
+    {
+        if (fishHoldPoint == null)
+        {
+            Debug.LogError("AfterFishHoldingManager：没有设置 Fish Hold Point！");
+            return null;
+        }
+
+        List<int> validIndices = GetValidFishIndices();
+
+        if (validIndices.Count == 0)
+        {
+            Debug.LogWarning("鱼类列表中没有有效的鱼模型！");
+            return null;
+        }
+
+        int selectedIndex = SelectFishIndex(validIndices);
+        FishEntry entry = fishList[selectedIndex];
+
+        DropCurrentFish();
+
+        GameObject fish = Instantiate(entry.fishModel);
+        fish.name = entry.fishModel.name;
+
+        RemoveWorldPhysics(fish);
+
+        fish.transform.SetParent(null);
+        fish.transform.position = startPosition;
+        fish.transform.rotation = entry.fishModel.transform.rotation;
+
+        returningFishScale = GetFishScale(entry);
+
+        // 计算不挂在 FishHoldPoint 下时对应的世界缩放
+        Vector3 holdScale = fishHoldPoint.lossyScale;
+
+        fish.transform.localScale = new Vector3(
+            returningFishScale.x * holdScale.x,
+            returningFishScale.y * holdScale.y,
+            returningFishScale.z * holdScale.z
+        );
+
+        fish.SetActive(true);
+
+        returningFish = fish;
+        returningFishIndex = selectedIndex;
+
+        Debug.Log("开始收回鱼：" + fish.name);
+
+        return fish;
+    }
+
+    // 飞回结束后，将同一个鱼实例放到手上
+    public void FinishFishReturn(GameObject fish)
+    {
+        if (fish == null || fish != returningFish)
+        {
+            Debug.LogWarning("收鱼失败：飞回的鱼模型不存在或不匹配。");
+            return;
+        }
+
+        if (fishHoldPoint == null ||
+            returningFishIndex < 0 ||
+            returningFishIndex >= fishList.Count)
+        {
+            Debug.LogError("AfterFishHoldingManager：鱼的位置或索引无效！");
+            return;
+        }
+
+        FishEntry entry = fishList[returningFishIndex];
+
+        fish.transform.SetParent(fishHoldPoint, false);
+        fish.transform.localPosition = entry.localPosition;
+        fish.transform.localEulerAngles = entry.localRotation;
+        fish.transform.localScale = returningFishScale;
+        fish.SetActive(true);
+
+        currentFish = fish;
+        currentFishIndex = returningFishIndex;
+        lastFishIndex = returningFishIndex;
+
+        returningFish = null;
+        returningFishIndex = -1;
+
+        Debug.Log("鱼已飞回并拿在手上：" + currentFish.name);
+    }
+
+    List<int> GetValidFishIndices()
+    {
+        List<int> validIndices = new List<int>();
+
+        if (fishList == null)
+            return validIndices;
+
+        for (int i = 0; i < fishList.Count; i++)
+        {
+            if (fishList[i] != null && fishList[i].fishModel != null)
+                validIndices.Add(i);
+        }
+
+        return validIndices;
+    }
+
+    int SelectFishIndex(List<int> validIndices)
+    {
+        if (validIndices.Count > 1 && validIndices.Contains(lastFishIndex))
+            validIndices.Remove(lastFishIndex);
+
+        return validIndices[fishRandom.Next(0, validIndices.Count)];
+    }
+
+    Vector3 GetFishScale(FishEntry entry)
+    {
+        if (!entry.randomizeScale)
+            return entry.localScale;
+
+        int minScale = Mathf.Max(1, minRandomScale);
+        int maxScale = Mathf.Max(minScale, maxRandomScale);
+        int randomScale = fishRandom.Next(minScale, maxScale + 1);
+
+        Debug.Log("本次随机缩放值：" + randomScale);
+
+        return Vector3.one * randomScale;
+    }
+
     public void DropCurrentFish()
     {
         if (!IsHoldingFish())
@@ -242,7 +296,6 @@ public class AfterFishHoldingManager : MonoBehaviour
         currentFish = null;
         currentFishIndex = -1;
 
-        // 保留鱼离开手中时的世界朝向和大小
         fish.transform.SetParent(null, true);
 
         if (playerCamera != null)
@@ -254,20 +307,15 @@ public class AfterFishHoldingManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "没有设置 Player Camera，鱼将在原位置放下。"
-            );
+            Debug.LogWarning("没有设置 Player Camera，鱼将在原位置放下。");
         }
 
         fish.SetActive(true);
 
-        // 添加地上鱼的交互标记
         FishWorldPickup pickup = fish.GetComponent<FishWorldPickup>();
 
         if (pickup == null)
-        {
             pickup = fish.AddComponent<FishWorldPickup>();
-        }
 
         pickup.owner = this;
         pickup.fishEntryIndex = fishIndex;
@@ -275,30 +323,23 @@ public class AfterFishHoldingManager : MonoBehaviour
         pickup.heldLocalRotation = heldLocalRotation;
         pickup.heldScale = heldScale;
 
-        // 添加碰撞箱
         BoxCollider box = fish.GetComponent<BoxCollider>();
 
         if (box == null)
-        {
             box = fish.AddComponent<BoxCollider>();
-        }
 
         SetFishColliderBounds(fish, box);
 
-        // 添加物理组件
         Rigidbody rb = fish.GetComponent<Rigidbody>();
 
         if (rb == null)
-        {
             rb = fish.AddComponent<Rigidbody>();
-        }
 
         rb.isKinematic = false;
         rb.useGravity = true;
         rb.mass = 1f;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-        // 轻轻向前抛出
         if (playerCamera != null)
         {
             rb.velocity =
@@ -309,14 +350,11 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("放下鱼：" + fish.name);
     }
 
-    // 查找拾取范围内最近的地上鱼
     FishWorldPickup FindNearestDroppedFish()
     {
         if (playerCamera == null)
         {
-            Debug.LogError(
-                "AfterFishHoldingManager：没有设置 Player Camera！"
-            );
+            Debug.LogError("AfterFishHoldingManager：没有设置 Player Camera！");
             return null;
         }
 
@@ -329,14 +367,10 @@ public class AfterFishHoldingManager : MonoBehaviour
         foreach (FishWorldPickup fish in droppedFish)
         {
             if (fish == null || !fish.gameObject.activeInHierarchy)
-            {
                 continue;
-            }
 
             if (fish.owner != this)
-            {
                 continue;
-            }
 
             Collider fishCollider = fish.GetComponent<Collider>();
             float distance;
@@ -369,13 +403,10 @@ public class AfterFishHoldingManager : MonoBehaviour
         return nearestFish;
     }
 
-    // 捡起地上的鱼
     void PickUpDroppedFish(FishWorldPickup pickup)
     {
         if (pickup == null || fishHoldPoint == null)
-        {
             return;
-        }
 
         GameObject fish = pickup.gameObject;
 
@@ -392,21 +423,15 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 如果手里有另一条鱼，先放下它
         if (IsHoldingFish() && currentFish != fish)
-        {
             DropCurrentFish();
-        }
 
-        // 移除地上鱼的物理组件
         RemoveWorldPhysics(fish);
 
         FishWorldPickup marker = fish.GetComponent<FishWorldPickup>();
 
         if (marker != null)
-        {
             Destroy(marker);
-        }
 
         fish.transform.SetParent(fishHoldPoint, false);
         fish.transform.localPosition = heldPosition;
@@ -421,44 +446,33 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("捡起鱼：" + fish.name);
     }
 
-    // 移除鱼根物体上的地面物理组件
     void RemoveWorldPhysics(GameObject fish)
     {
         if (fish == null)
-        {
             return;
-        }
 
         FishWorldPickup marker = fish.GetComponent<FishWorldPickup>();
 
         if (marker != null)
-        {
             Destroy(marker);
-        }
 
         Rigidbody rb = fish.GetComponent<Rigidbody>();
 
         if (rb != null)
-        {
             Destroy(rb);
-        }
 
         Collider[] colliders = fish.GetComponents<Collider>();
 
         foreach (Collider col in colliders)
         {
             if (col != null)
-            {
                 Destroy(col);
-            }
         }
     }
 
-    // 根据模型自身的局部包围盒计算碰撞箱
     void SetFishColliderBounds(GameObject fish, BoxCollider box)
     {
-        Renderer[] renderers =
-            fish.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = fish.GetComponentsInChildren<Renderer>();
 
         bool initialized = false;
         Bounds localBounds = new Bounds(Vector3.zero, Vector3.one);
@@ -466,9 +480,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         foreach (Renderer renderer in renderers)
         {
             if (renderer == null)
-            {
                 continue;
-            }
 
             Bounds rendererBounds = renderer.localBounds;
 
@@ -485,14 +497,10 @@ public class AfterFishHoldingManager : MonoBehaviour
                         );
 
                         Vector3 worldCorner =
-                            renderer.transform.TransformPoint(
-                                rendererLocalCorner
-                            );
+                            renderer.transform.TransformPoint(rendererLocalCorner);
 
                         Vector3 fishLocalCorner =
-                            fish.transform.InverseTransformPoint(
-                                worldCorner
-                            );
+                            fish.transform.InverseTransformPoint(worldCorner);
 
                         if (!initialized)
                         {

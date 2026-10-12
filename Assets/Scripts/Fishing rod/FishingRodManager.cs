@@ -3,11 +3,28 @@ using UnityEngine;
 
 public class Fishingrodmanager : MonoBehaviour
 {
-    [Header("Fishing Float")]
+    [Header("实际钓鱼鱼漂")]
     public GameObject fishingFloat;
+
+    [Header("装饰鱼漂：整个装饰鱼漂的根物体")]
+    public Transform decorativeFloat;
+
+    [Header("视角")]
+    public Transform viewTransform;
 
     [Header("Cast Point")]
     public Transform castPoint;
+
+    [Header("鱼线")]
+    public LineRenderer fishingLine;
+    public Transform decorativeLinePoint;
+    public Transform fishingFloatLinePoint;
+
+    [Header("装饰鱼漂惯性")]
+    public float rotationInertia = 0.015f;
+    public float movementInertia = 1.5f;
+    public float inertiaReturnSpeed = 8f;
+    public float maxInertiaOffset = 0.12f;
 
     [Header("Cast Force")]
     public float forwardForce = 8f;
@@ -19,59 +36,181 @@ public class Fishingrodmanager : MonoBehaviour
     [Header("Fishing Minigame")]
     public FishingMinigame fishingMinigame;
 
+    [Header("成功钓鱼后的收回动画")]
+    public float returnDuration = 1.2f;
+    public float returnArcHeight = 1.5f;
+
     private Animator animator;
-
-    // 防止抛竿动画期间再次按 E
     private bool isCasting = false;
+    private bool isFishingCastActive = false;
+    private bool isReturning = false;
 
-    // 是否已经拿到鱼竿
     public bool hasRod = false;
 
+    private Vector3 decorativeStartPosition;
+    private Quaternion decorativeStartRotation;
+    private bool decorativePositionSaved = false;
 
-    // ==================================================
-    // 初始化
-    // ==================================================
+    private bool hideDecorativeDuringCast = false;
+
+    private Vector3 currentInertiaOffset;
+    private Vector3 inertiaVelocity;
+
+    private Vector3 previousViewPosition;
+    private Quaternion previousViewRotation;
+    private bool previousViewSaved = false;
 
     void Start()
     {
         animator = GetComponent<Animator>();
 
-        // 游戏开始时隐藏鱼漂
         if (fishingFloat != null)
         {
             fishingFloat.SetActive(false);
         }
+        else
+        {
+            Debug.LogError("Fishingrodmanager：没有设置实际 Fishing Float！");
+        }
 
-        // 注意：
-        // 这里不要再写 hasRod = false;
-        //
-        // 因为 HandRod 一开始是关闭的，
-        // 玩家捡起它时才会启动这个脚本。
+        if (decorativeFloat != null)
+        {
+            decorativeStartPosition = decorativeFloat.localPosition;
+            decorativeStartRotation = decorativeFloat.localRotation;
+            decorativePositionSaved = true;
+
+            decorativeFloat.gameObject.SetActive(
+                hasRod && !hideDecorativeDuringCast
+            );
+        }
+        else
+        {
+            Debug.LogError("Fishingrodmanager：没有设置 Decorative Float！");
+        }
+
+        if (viewTransform == null && Camera.main != null)
+        {
+            viewTransform = Camera.main.transform;
+        }
+
+        SaveViewTransform();
+
+        if (fishingLine != null)
+        {
+            fishingLine.useWorldSpace = true;
+            fishingLine.positionCount = 2;
+            fishingLine.enabled = hasRod;
+        }
     }
 
+    void SaveViewTransform()
+    {
+        if (viewTransform == null)
+        {
+            previousViewSaved = false;
+            return;
+        }
 
-    // ==================================================
-    // 玩家输入
-    // ==================================================
+        previousViewPosition = viewTransform.position;
+        previousViewRotation = viewTransform.rotation;
+        previousViewSaved = true;
+    }
+
+    void LateUpdate()
+    {
+        UpdateDecorativeFloat();
+        UpdateFishingLine();
+
+        if (isFishingCastActive &&
+            !isCasting &&
+            !isReturning &&
+            fishingFloat != null &&
+            !fishingFloat.activeSelf)
+        {
+            FinishFishingCast();
+        }
+    }
+
+    void UpdateDecorativeFloat()
+    {
+        if (decorativeFloat == null)
+            return;
+
+        bool shouldShow = hasRod && !hideDecorativeDuringCast;
+
+        if (decorativeFloat.gameObject.activeSelf != shouldShow)
+            decorativeFloat.gameObject.SetActive(shouldShow);
+
+        if (!shouldShow || !decorativePositionSaved)
+        {
+            SaveViewTransform();
+            return;
+        }
+
+        Vector3 targetOffset = Vector3.zero;
+
+        if (viewTransform != null)
+        {
+            if (!previousViewSaved)
+            {
+                SaveViewTransform();
+            }
+            else
+            {
+                float yawDelta = Mathf.DeltaAngle(
+                    previousViewRotation.eulerAngles.y,
+                    viewTransform.rotation.eulerAngles.y
+                );
+
+                float pitchDelta = Mathf.DeltaAngle(
+                    previousViewRotation.eulerAngles.x,
+                    viewTransform.rotation.eulerAngles.x
+                );
+
+                targetOffset.x -= yawDelta * rotationInertia;
+                targetOffset.y += pitchDelta * rotationInertia;
+
+                Vector3 worldMovement =
+                    viewTransform.position - previousViewPosition;
+
+                Vector3 localMovement =
+                    viewTransform.InverseTransformVector(worldMovement);
+
+                targetOffset.x -= localMovement.x * movementInertia;
+                targetOffset.y -= localMovement.y * movementInertia;
+
+                previousViewPosition = viewTransform.position;
+                previousViewRotation = viewTransform.rotation;
+            }
+        }
+
+        targetOffset = Vector3.ClampMagnitude(
+            targetOffset,
+            maxInertiaOffset
+        );
+
+        currentInertiaOffset = Vector3.SmoothDamp(
+            currentInertiaOffset,
+            targetOffset,
+            ref inertiaVelocity,
+            1f / Mathf.Max(0.01f, inertiaReturnSpeed)
+        );
+
+        decorativeFloat.localPosition =
+            decorativeStartPosition + currentInertiaOffset;
+
+        decorativeFloat.localRotation = decorativeStartRotation;
+    }
 
     void Update()
     {
-        // 没拿到鱼竿
-        if (!hasRod)
-        {
+        if (!hasRod || isCasting || isReturning)
             return;
-        }
 
-        // 正在抛竿
-        if (isCasting)
-        {
-            return;
-        }
-
-        // 按 E
+        // E 键：优先判断是否正在钓鱼，确保等待鱼咬钩时也能退出
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // 如果正在玩小游戏
+            // 情况一：正在进行钓鱼小游戏
             if (FishingMinigame.IsPlaying)
             {
                 if (fishingMinigame != null)
@@ -79,193 +218,284 @@ public class Fishingrodmanager : MonoBehaviour
                     fishingMinigame.CancelGame();
                 }
 
+                FinishFishingCast();
+
+                Debug.Log("已退出钓鱼小游戏。");
                 return;
             }
 
+            // 情况二：鱼漂已经抛出，正在等待鱼咬钩
+            if (isFishingCastActive)
+            {
+                FinishFishingCast();
+
+                Debug.Log("已取消钓鱼等待。");
+                return;
+            }
+
+            // 情况三：当前没有进行钓鱼，开始抛竿
             StartCoroutine(CastFishingRod());
         }
     }
 
+    void UpdateFishingLine()
+    {
+        if (fishingLine == null)
+            return;
 
-    // ==================================================
-    // 抛竿
-    // ==================================================
+        bool shouldShowLine = hasRod;
+
+        if (fishingLine.enabled != shouldShowLine)
+            fishingLine.enabled = shouldShowLine;
+
+        if (!shouldShowLine || castPoint == null)
+            return;
+
+        Transform endPoint = null;
+
+        if (isFishingCastActive &&
+            fishingFloat != null &&
+            fishingFloat.activeSelf)
+        {
+            endPoint = fishingFloatLinePoint != null
+                ? fishingFloatLinePoint
+                : fishingFloat.transform;
+        }
+        else if (!hideDecorativeDuringCast)
+        {
+            endPoint = decorativeLinePoint != null
+                ? decorativeLinePoint
+                : decorativeFloat;
+        }
+
+        if (isCasting || endPoint == null)
+        {
+            fishingLine.enabled = false;
+            return;
+        }
+
+        fishingLine.enabled = true;
+        fishingLine.positionCount = 2;
+        fishingLine.SetPosition(0, castPoint.position);
+        fishingLine.SetPosition(1, endPoint.position);
+    }
 
     IEnumerator CastFishingRod()
     {
         isCasting = true;
 
-
-        // --------------------------------------------------
-        // 检查必要组件
-        // --------------------------------------------------
-
-        if (fishingFloat == null)
+        if (fishingFloat == null ||
+            castPoint == null ||
+            animator == null ||
+            castAnimation == null)
         {
             Debug.LogError(
-                "Fishingrodmanager：没有设置 Fishing Float！"
+                "Fishingrodmanager：请检查 Fishing Float、Cast Point、Animator 和 Cast Animation。"
             );
 
             isCasting = false;
             yield break;
         }
 
-        if (castPoint == null)
-        {
-            Debug.LogError(
-                "Fishingrodmanager：没有设置 Cast Point！"
-            );
-
-            isCasting = false;
-            yield break;
-        }
-
-        if (animator == null)
-        {
-            Debug.LogError(
-                "Fishingrodmanager：HandRod 上没有 Animator！"
-            );
-
-            isCasting = false;
-            yield break;
-        }
-
-        if (castAnimation == null)
-        {
-            Debug.LogError(
-                "Fishingrodmanager：没有设置 Cast Animation！"
-            );
-
-            isCasting = false;
-            yield break;
-        }
-
-
-        // --------------------------------------------------
-        // 关闭旧鱼漂
-        // --------------------------------------------------
+        hideDecorativeDuringCast = false;
 
         fishingFloat.SetActive(false);
-
-
-        // --------------------------------------------------
-        // 播放抛竿动画
-        // --------------------------------------------------
+        isFishingCastActive = false;
 
         animator.enabled = true;
+        animator.Play("抛竿", 0, 0f);
 
-        animator.Play(
-            "抛竿",
-            0,
-            0f
-        );
+        yield return new WaitForSeconds(castAnimation.length);
 
+        hideDecorativeDuringCast = true;
 
-        // --------------------------------------------------
-        // 等待动画结束
-        // --------------------------------------------------
+        if (decorativeFloat != null)
+            decorativeFloat.gameObject.SetActive(false);
 
-        yield return new WaitForSeconds(
-            castAnimation.length
-        );
+        if (!hasRod)
+        {
+            isCasting = false;
+            FinishFishingCast();
+            yield break;
+        }
 
+        fishingFloat.transform.position = castPoint.position;
 
-        // --------------------------------------------------
-        // 鱼漂出现
-        // --------------------------------------------------
+        FishingFloat floatScript =
+            fishingFloat.GetComponent<FishingFloat>();
+
+        if (floatScript != null)
+            floatScript.RestoreUprightRotation();
 
         fishingFloat.SetActive(true);
 
-
-        // --------------------------------------------------
-        // 鱼漂放到鱼竿尖端
-        // --------------------------------------------------
-
-        fishingFloat.transform.position =
-            castPoint.position;
-
-
-        // --------------------------------------------------
-        // 获取 Rigidbody
-        // --------------------------------------------------
-
-        Rigidbody floatRb =
-            fishingFloat.GetComponent<Rigidbody>();
-
+        Rigidbody floatRb = fishingFloat.GetComponent<Rigidbody>();
 
         if (floatRb == null)
         {
-            Debug.LogError(
-                "Fishingrodmanager：FishingFloat 没有 Rigidbody！"
-            );
+            Debug.LogError("Fishingrodmanager：实际鱼漂没有 Rigidbody！");
 
+            fishingFloat.SetActive(false);
             isCasting = false;
+            FinishFishingCast();
             yield break;
         }
 
-
-        // --------------------------------------------------
-        // 重置物理
-        // --------------------------------------------------
-
+        floatRb.velocity = Vector3.zero;
+        floatRb.angularVelocity = Vector3.zero;
+        floatRb.constraints = RigidbodyConstraints.FreezeRotation;
         floatRb.isKinematic = false;
-
         floatRb.useGravity = true;
 
-        floatRb.constraints =
-            RigidbodyConstraints.None;
-
-        floatRb.velocity =
-            Vector3.zero;
-
-        floatRb.angularVelocity =
-            Vector3.zero;
-
-
-        // --------------------------------------------------
-        // 计算抛竿方向
-        // --------------------------------------------------
-
         Vector3 castDirection =
-            castPoint.forward * forwardForce
-            +
+            castPoint.forward * forwardForce +
             Vector3.up * upwardForce;
 
+        floatRb.AddForce(castDirection, ForceMode.VelocityChange);
 
-        // --------------------------------------------------
-        // 抛出去
-        // --------------------------------------------------
-
-        floatRb.AddForce(
-            castDirection,
-            ForceMode.VelocityChange
-        );
-
-
-        // --------------------------------------------------
-        // 抛竿完成
-        // --------------------------------------------------
-
+        isFishingCastActive = true;
         isCasting = false;
+
+        UpdateFishingLine();
     }
 
-
-    // ==================================================
-    // 鱼漂 / 鱼竿碰到 Ground
-    // ==================================================
-
-    private void OnCollisionEnter(
-        Collision collision
-    )
+    // 钓鱼成功时，由 FishingMinigame 调用
+    public void StartSuccessfulReturn(
+        AfterFishHoldingManager fishManager)
     {
-        if (
-            collision.gameObject.CompareTag("Ground")
-        )
+        if (isReturning || fishingFloat == null)
+            return;
+
+        StartCoroutine(
+            SuccessfulReturnCoroutine(fishManager)
+        );
+    }
+
+    IEnumerator SuccessfulReturnCoroutine(
+        AfterFishHoldingManager fishManager)
+    {
+        isReturning = true;
+
+        FishingFloat floatScript =
+            fishingFloat.GetComponent<FishingFloat>();
+
+        if (floatScript != null)
+            floatScript.ResetForNextCast();
+
+        Rigidbody rb = fishingFloat.GetComponent<Rigidbody>();
+
+        if (rb != null)
         {
-            if (fishingFloat != null)
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.useGravity = false;
+            rb.isKinematic = true;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+
+        Vector3 floatStart = fishingFloat.transform.position;
+
+        Vector3 floatEnd = castPoint != null
+            ? castPoint.position
+            : transform.position;
+
+        GameObject fish = null;
+
+        if (fishManager != null)
+        {
+            Vector3 fishStart =
+                floatStart + Vector3.up * 0.15f;
+
+            fish = fishManager.CreateFishForReturn(fishStart);
+        }
+        else
+        {
+            Debug.LogError(
+                "Fishingrodmanager：没有设置 AfterFishHoldingManager！"
+            );
+        }
+
+        Vector3 fishStartPosition = fish != null
+            ? fish.transform.position
+            : Vector3.zero;
+
+        Vector3 fishEndPosition = floatEnd;
+
+        if (castPoint != null)
+            fishEndPosition += castPoint.right * 0.2f;
+
+        float duration = Mathf.Max(0.05f, returnDuration);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+            float arc = Mathf.Sin(t * Mathf.PI) * returnArcHeight;
+
+            fishingFloat.transform.position =
+                Vector3.Lerp(floatStart, floatEnd, t)
+                + Vector3.up * arc;
+
+            if (fish != null)
             {
-                fishingFloat.SetActive(false);
+                fish.transform.position =
+                    Vector3.Lerp(fishStartPosition, fishEndPosition, t)
+                    + Vector3.up * arc;
             }
+
+            yield return null;
+        }
+
+        fishingFloat.transform.position = floatEnd;
+
+        if (fish != null && fishManager != null)
+            fishManager.FinishFishReturn(fish);
+
+        FinishFishingCast();
+    }
+
+    // 结束本次钓鱼
+    public void FinishFishingCast()
+    {
+        isFishingCastActive = false;
+        isReturning = false;
+        hideDecorativeDuringCast = false;
+
+        if (fishingFloat != null)
+        {
+            FishingFloat floatScript =
+                fishingFloat.GetComponent<FishingFloat>();
+
+            if (floatScript != null)
+                floatScript.ResetForNextCast();
+
+            fishingFloat.SetActive(false);
+        }
+
+        currentInertiaOffset = Vector3.zero;
+        inertiaVelocity = Vector3.zero;
+
+        if (decorativeFloat != null)
+        {
+            decorativeFloat.localPosition = decorativeStartPosition;
+            decorativeFloat.localRotation = decorativeStartRotation;
+            decorativeFloat.gameObject.SetActive(hasRod);
+        }
+
+        SaveViewTransform();
+        UpdateFishingLine();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            if (isFishingCastActive && !isReturning)
+                FinishFishingCast();
+            else if (!isReturning && fishingFloat != null)
+                fishingFloat.SetActive(false);
         }
     }
 }

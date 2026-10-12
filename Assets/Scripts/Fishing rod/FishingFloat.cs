@@ -17,63 +17,82 @@ public class FishingFloat : MonoBehaviour
     public float maxBiteTime = 6f;
 
     private Rigidbody rb;
-
     private bool isOnWater = false;
-
     private Coroutine biteCoroutine;
-
     private float waterHeight;
 
-
-    // ==================================================
-    // 初始化
-    // ==================================================
+    // 保存场景中鱼漂原本正确的朝向
+    private Quaternion uprightRotation;
+    private bool uprightRotationSaved = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        uprightRotation = transform.rotation;
+        uprightRotationSaved = true;
     }
 
+    // 恢复鱼漂原本的正确朝向
+    public void RestoreUprightRotation()
+    {
+        if (!uprightRotationSaved)
+        {
+            uprightRotation = transform.rotation;
+            uprightRotationSaved = true;
+        }
 
-    // ==================================================
-    // 鱼漂被打开
-    // ==================================================
+        transform.rotation = uprightRotation;
+
+        if (rb != null)
+            rb.angularVelocity = Vector3.zero;
+    }
 
     void OnEnable()
     {
         if (rb == null)
-        {
             rb = GetComponent<Rigidbody>();
-        }
 
-        // 没拿到鱼竿，不允许鱼漂工作
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
         {
             StopFishingFloat();
-
             return;
         }
 
-        // 拿到鱼竿后正常初始化
         isOnWater = false;
 
-        rb.isKinematic = false;
-        rb.useGravity = true;
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
 
-        rb.constraints =
-            RigidbodyConstraints.None;
-
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+            // 防止碰撞造成鱼漂翻转
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.isKinematic = false;
+            rb.useGravity = true;
+        }
     }
 
+    void OnDisable()
+    {
+        isOnWater = false;
 
-    // ==================================================
-    // 停止鱼漂
-    // ==================================================
+        if (biteCoroutine != null)
+        {
+            StopCoroutine(biteCoroutine);
+            biteCoroutine = null;
+        }
+
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+    }
 
     void StopFishingFloat()
     {
@@ -89,15 +108,11 @@ public class FishingFloat : MonoBehaviour
         {
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-
             rb.isKinematic = true;
             rb.useGravity = false;
-
-            rb.constraints =
-                RigidbodyConstraints.FreezeAll;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
         }
     }
-
 
     // ==================================================
     // 普通碰撞
@@ -105,40 +120,22 @@ public class FishingFloat : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // 没拿鱼竿，不处理任何事情
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
-        {
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
             return;
-        }
-
-
-        // ------------------------------
-        // Ground
-        // ------------------------------
 
         if (IsGround(collision.collider))
         {
-            gameObject.SetActive(false);
+            ReturnToRod();
             return;
         }
 
-
-        // ------------------------------
-        // Water
-        // ------------------------------
-
         if (IsWater(collision.collider))
         {
-            waterHeight =
-                collision.collider.bounds.max.y;
-
+            waterHeight = collision.collider.bounds.max.y;
             StartFishing();
         }
     }
-
 
     // ==================================================
     // Trigger
@@ -146,80 +143,34 @@ public class FishingFloat : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 没拿鱼竿，不处理任何事情
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
-        {
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
             return;
-        }
-
-
-        // ------------------------------
-        // Ground
-        // ------------------------------
 
         if (IsGround(other))
         {
-            gameObject.SetActive(false);
+            ReturnToRod();
             return;
         }
 
-
-        // ------------------------------
-        // Water
-        // ------------------------------
-
         if (IsWater(other))
         {
-            waterHeight =
-                other.bounds.max.y;
-
+            waterHeight = other.bounds.max.y;
             StartFishing();
         }
     }
 
-
-    // ==================================================
-    // 判断是不是 Ground
-    // ==================================================
-
     bool IsGround(Collider collider)
     {
-        if (collider.CompareTag("Ground"))
-        {
-            return true;
-        }
-
-        if (collider.transform.root.CompareTag("Ground"))
-        {
-            return true;
-        }
-
-        return false;
+        return collider.CompareTag("Ground") ||
+               collider.transform.root.CompareTag("Ground");
     }
-
-
-    // ==================================================
-    // 判断是不是 Water
-    // ==================================================
 
     bool IsWater(Collider collider)
     {
-        if (collider.CompareTag("Water"))
-        {
-            return true;
-        }
-
-        if (collider.transform.root.CompareTag("Water"))
-        {
-            return true;
-        }
-
-        return false;
+        return collider.CompareTag("Water") ||
+               collider.transform.root.CompareTag("Water");
     }
-
 
     // ==================================================
     // 开始钓鱼
@@ -227,172 +178,146 @@ public class FishingFloat : MonoBehaviour
 
     private void StartFishing()
     {
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
-        {
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
             return;
-        }
 
         if (isOnWater)
-        {
             return;
-        }
 
         isOnWater = true;
 
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
 
-        rb.useGravity = false;
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
 
-        rb.constraints =
-            RigidbodyConstraints.FreezeRotation;
-
-        Vector3 position =
-            transform.position;
-
-        position.y =
-            waterHeight;
-
-        transform.position =
-            position;
+            Vector3 position = rb.position;
+            position.y = waterHeight;
+            rb.position = position;
+        }
 
         StartWaitingForFish();
     }
 
-
-    // ==================================================
-    // 保持鱼漂在水面
-    // ==================================================
-
     void FixedUpdate()
     {
-        if (!isOnWater)
-        {
+        if (!isOnWater || rb == null)
             return;
-        }
 
-        Vector3 position =
-            rb.position;
-
-        position.y =
-            waterHeight;
+        Vector3 position = rb.position;
+        position.y = waterHeight;
 
         rb.MovePosition(position);
     }
 
-
     // ==================================================
-    // 开始等待鱼
+    // 等待鱼咬钩
     // ==================================================
 
     void StartWaitingForFish()
     {
         if (biteCoroutine != null)
-        {
             StopCoroutine(biteCoroutine);
-        }
 
-        biteCoroutine =
-            StartCoroutine(
-                WaitForFish()
-            );
+        biteCoroutine = StartCoroutine(WaitForFish());
     }
-
-
-    // ==================================================
-    // 随机等待鱼咬钩
-    // ==================================================
 
     IEnumerator WaitForFish()
     {
-        float waitTime =
-            Random.Range(
-                minBiteTime,
-                maxBiteTime
-            );
+        float waitTime = Random.Range(minBiteTime, maxBiteTime);
 
-        Debug.Log(
-            "鱼漂已经落水，等待鱼咬钩……"
-        );
+        Debug.Log("鱼漂已经落水，等待鱼咬钩……");
 
-        yield return
-            new WaitForSeconds(
-                waitTime
-            );
+        yield return new WaitForSeconds(waitTime);
 
-
-        if (!gameObject.activeSelf)
-        {
+        if (!gameObject.activeSelf || !isOnWater)
             yield break;
-        }
 
-        if (!isOnWater)
-        {
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
             yield break;
-        }
 
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
-        {
-            yield break;
-        }
-
-
-        Debug.Log(
-            "有鱼咬钩！"
-        );
-
+        Debug.Log("有鱼咬钩！");
 
         if (fishingRodAnimator != null)
-        {
-            fishingRodAnimator.Play(
-                "鱼咬竿",
-                0,
-                0
-            );
-        }
-
+            fishingRodAnimator.Play("鱼咬竿", 0, 0f);
 
         if (fishingMinigame != null)
-        {
             fishingMinigame.StartGame();
-        }
         else
-        {
-            Debug.LogError(
-                "FishingFloat：没有设置 Fishing Minigame！"
-            );
-        }
+            Debug.LogError("FishingFloat：没有设置 Fishing Minigame！");
+
+        biteCoroutine = null;
     }
 
-
     // ==================================================
-    // 小游戏失败
+    // 小游戏失败后继续钓鱼
     // ==================================================
 
     public void ContinueFishing()
     {
         if (!gameObject.activeSelf)
-        {
             return;
-        }
 
-        if (
-            fishingRodManager != null &&
-            !fishingRodManager.hasRod
-        )
+        if (fishingRodManager != null &&
+            !fishingRodManager.hasRod)
         {
-            gameObject.SetActive(false);
+            ReturnToRod();
             return;
         }
 
         isOnWater = true;
 
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
+
         StartWaitingForFish();
+    }
+
+    // ==================================================
+    // 收回实际鱼漂
+    // ==================================================
+
+    void ReturnToRod()
+    {
+        if (fishingRodManager != null)
+            fishingRodManager.FinishFishingCast();
+        else
+            gameObject.SetActive(false);
+    }
+
+    // ==================================================
+    // 下一次抛竿前重置
+    // ==================================================
+
+    public void ResetForNextCast()
+    {
+        isOnWater = false;
+
+        if (biteCoroutine != null)
+        {
+            StopCoroutine(biteCoroutine);
+            biteCoroutine = null;
+        }
+
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+            rb.useGravity = false;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+
+        RestoreUprightRotation();
     }
 }

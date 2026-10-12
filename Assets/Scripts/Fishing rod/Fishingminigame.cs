@@ -1,4 +1,3 @@
-
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +24,9 @@ public class FishingMinigame : MonoBehaviour
     [Tooltip("绿色区域随机位置的上下边界留白，单位为 UI 像素")]
     public float greenZoneEdgePadding = 5f;
 
+    [Header("Fish Holding Manager")]
+    public AfterFishHoldingManager afterFishHoldingManager;
+
     private float currentTime;
     private float playerY;
 
@@ -39,7 +41,6 @@ public class FishingMinigame : MonoBehaviour
         get { return isPlaying; }
     }
 
-    // 初始化
     void Start()
     {
         if (fishingUI != null)
@@ -48,12 +49,9 @@ public class FishingMinigame : MonoBehaviour
         }
 
         isPlaying = false;
-
-        // 游戏开始时禁止钓鱼
         canFish = false;
     }
 
-    // 游戏运行
     void Update()
     {
         if (!isPlaying)
@@ -73,6 +71,15 @@ public class FishingMinigame : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             playerY += jumpForce;
+        }
+
+        if (fishingBar == null || playerMarker == null)
+        {
+            Debug.LogError(
+                "FishingMinigame：请设置 Fishing Bar 和 Player Marker！"
+            );
+            CancelGame();
+            return;
         }
 
         float top = fishingBar.rect.height / 2f;
@@ -104,15 +111,11 @@ public class FishingMinigame : MonoBehaviour
 
         float barHeight = fishingBar.rect.height;
         float greenHeight = greenZone.rect.height;
-
-        // 根据绿色区域自身高度计算可移动范围，
-        // 确保绿色区域完整留在钓鱼条内部
         float padding = Mathf.Max(0f, greenZoneEdgePadding);
 
         float minY = -barHeight / 2f + greenHeight / 2f + padding;
         float maxY = barHeight / 2f - greenHeight / 2f - padding;
 
-        // 如果绿色区域太大，就让它位于钓鱼条中央
         if (minY > maxY)
         {
             minY = 0f;
@@ -125,7 +128,6 @@ public class FishingMinigame : MonoBehaviour
 
         float randomY = Random.Range(minY, maxY);
 
-        // 只改变 Y 坐标，保留原本的 X 坐标
         greenZone.anchoredPosition = new Vector2(
             greenZone.anchoredPosition.x,
             randomY
@@ -137,7 +139,6 @@ public class FishingMinigame : MonoBehaviour
     // 开始小游戏
     public void StartGame()
     {
-        // 没有鱼竿，不能开始
         if (!canFish)
         {
             return;
@@ -151,7 +152,6 @@ public class FishingMinigame : MonoBehaviour
             return;
         }
 
-        // 每次开始都随机生成新的绿色区域位置
         RandomizeGreenZonePosition();
 
         fishingUI.SetActive(true);
@@ -195,6 +195,20 @@ public class FishingMinigame : MonoBehaviour
     {
         isPlaying = false;
 
+        if (playerMarker == null || greenZone == null)
+        {
+            Debug.LogError(
+                "FishingMinigame：请设置 Player Marker 和 Green Zone！"
+            );
+
+            if (fishingUI != null)
+            {
+                fishingUI.SetActive(false);
+            }
+
+            return;
+        }
+
         float playerPosition = playerMarker.anchoredPosition.y;
         float greenPosition = greenZone.anchoredPosition.y;
         float greenHeight = greenZone.rect.height;
@@ -204,19 +218,26 @@ public class FishingMinigame : MonoBehaviour
             &&
             playerPosition <= greenPosition + greenHeight / 2f;
 
-        // 成功
+        // 钓鱼成功：鱼漂和鱼一起飞回
         if (fishingSuccess)
         {
             Debug.Log("钓鱼成功！");
 
-            if (fishingFloat != null)
+            if (fishingFloat != null &&
+                fishingFloat.fishingRodManager != null)
             {
-                fishingFloat.gameObject.SetActive(false);
+                fishingFloat.fishingRodManager.StartSuccessfulReturn(
+                    afterFishHoldingManager
+                );
             }
-
-            GiveFishAfterSuccess();
+            else
+            {
+                Debug.LogError(
+                    "FishingMinigame：鱼漂没有设置 Fishingrodmanager！"
+                );
+            }
         }
-        // 失败
+        // 钓鱼失败：原有逻辑保持不变
         else
         {
             Debug.Log("钓鱼失败！");
@@ -227,18 +248,13 @@ public class FishingMinigame : MonoBehaviour
             }
         }
 
-        // 隐藏 UI
         if (fishingUI != null)
         {
             fishingUI.SetActive(false);
         }
     }
 
-    // 鱼类管理器
-    [Header("Fish Holding Manager")]
-    public AfterFishHoldingManager afterFishHoldingManager;
-
-    // 钓鱼成功后调用，获得一条随机鱼
+    // 保留原有方法，供其他系统需要时调用
     public void GiveFishAfterSuccess()
     {
         Debug.Log("GiveFishAfterSuccess 已执行");
