@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,11 +40,19 @@ public class AfterFishHoldingManager : MonoBehaviour
 
     [Header("碰撞箱缩放")]
     [Range(0.3f, 1f)]
-    public float colliderSizeMultiplier = 0.8f;
+    public float colliderSizeMultiplier = 0.3f;
 
     private GameObject currentFish;
     private int currentFishIndex = -1;
     private int lastFishIndex = -1;
+
+    // 使用独立随机数生成器，避免完全依赖 Unity 全局随机数状态
+    private System.Random fishRandom;
+
+    void Awake()
+    {
+        fishRandom = new System.Random(Guid.NewGuid().GetHashCode());
+    }
 
     void Start()
     {
@@ -54,7 +61,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             maxRandomScale = minRandomScale;
         }
 
-        // 隐藏模板，实际获得鱼时再复制
+        // 隐藏场景中的鱼模板，实际获得鱼时再复制
         foreach (FishEntry entry in fishList)
         {
             if (entry != null && entry.fishModel != null)
@@ -124,6 +131,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
+        // 收集所有有效鱼的索引
         List<int> validIndices = new List<int>();
 
         for (int i = 0; i < fishList.Count; i++)
@@ -140,50 +148,61 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 尽量避免连续两次获得同一种鱼
-        if (validIndices.Count > 1)
+        // 如果存在多种鱼，尽量避免连续两次抽中同一条
+        if (validIndices.Count > 1 && validIndices.Contains(lastFishIndex))
         {
             validIndices.Remove(lastFishIndex);
         }
 
-        int selectedIndex = validIndices[
-            UnityEngine.Random.Range(0, validIndices.Count)
-        ];
+        // 使用独立随机数选择鱼
+        int randomPosition = fishRandom.Next(0, validIndices.Count);
+        int selectedIndex = validIndices[randomPosition];
 
         FishEntry selectedFish = fishList[selectedIndex];
+
+        Debug.Log(
+            "本次抽中鱼：索引 " + selectedIndex
+            + "，模板名称：" + selectedFish.fishModel.name
+        );
 
         // 新鱼替换旧鱼：先将旧鱼放到地上
         DropCurrentFish();
 
-        // 从场景模板复制独立的鱼模型
+        // 复制场景模板
         GameObject newFish = Instantiate(selectedFish.fishModel);
         newFish.name = selectedFish.fishModel.name;
 
+        // 清理复制品上的地面物理组件
         RemoveWorldPhysics(newFish);
 
+        // 设置父物体及持鱼位置
         newFish.transform.SetParent(fishHoldPoint, false);
         newFish.transform.localPosition = selectedFish.localPosition;
         newFish.transform.localEulerAngles = selectedFish.localRotation;
 
-        // 三个轴使用相同的随机缩放
+        // 先激活，再设置缩放，避免模型激活时的组件覆盖初始缩放
+        newFish.SetActive(true);
+
+        Vector3 finalScale;
+
         if (selectedFish.randomizeScale)
         {
             int minScale = Mathf.Max(1, minRandomScale);
             int maxScale = Mathf.Max(minScale, maxRandomScale);
 
-            int randomScale = UnityEngine.Random.Range(
-                minScale,
-                maxScale + 1
-            );
+            // System.Random 的上限不包含在结果内，因此需要 +1
+            int randomScale = fishRandom.Next(minScale, maxScale + 1);
 
-            newFish.transform.localScale = Vector3.one * randomScale;
+            finalScale = Vector3.one * randomScale;
+
+            Debug.Log("本次随机缩放值：" + randomScale);
         }
         else
         {
-            newFish.transform.localScale = selectedFish.localScale;
+            finalScale = selectedFish.localScale;
         }
 
-        newFish.SetActive(true);
+        newFish.transform.localScale = finalScale;
 
         currentFish = newFish;
         currentFishIndex = selectedIndex;
@@ -191,7 +210,7 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         Debug.Log(
             "获得鱼：" + currentFish.name
-            + "，大小：" + currentFish.transform.localScale.x
+            + "，最终缩放：" + currentFish.transform.localScale
         );
     }
 
@@ -208,7 +227,6 @@ public class AfterFishHoldingManager : MonoBehaviour
         GameObject fish = currentFish;
         int fishIndex = currentFishIndex;
 
-        // 防止鱼列表变化后索引越界
         if (fishIndex < 0 || fishList == null
             || fishIndex >= fishList.Count
             || fishList[fishIndex] == null)
@@ -320,7 +338,6 @@ public class AfterFishHoldingManager : MonoBehaviour
                 continue;
             }
 
-            // 优先根据碰撞箱判断距离，而不是鱼模型的中心点
             Collider fishCollider = fish.GetComponent<Collider>();
             float distance;
 
@@ -367,9 +384,9 @@ public class AfterFishHoldingManager : MonoBehaviour
         Vector3 heldRotation = pickup.heldLocalRotation;
         float heldScale = pickup.heldScale;
 
-        // 检查索引，避免无效数据导致报错
         if (fishIndex < 0 || fishList == null
-            || fishIndex >= fishList.Count)
+            || fishIndex >= fishList.Count
+            || fishList[fishIndex] == null)
         {
             Debug.LogError("无法捡鱼：鱼列表索引无效。");
             return;
@@ -404,9 +421,14 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("捡起鱼：" + fish.name);
     }
 
-    // 移除鱼身上的地面物理组件
+    // 移除鱼根物体上的地面物理组件
     void RemoveWorldPhysics(GameObject fish)
     {
+        if (fish == null)
+        {
+            return;
+        }
+
         FishWorldPickup marker = fish.GetComponent<FishWorldPickup>();
 
         if (marker != null)
@@ -425,7 +447,10 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         foreach (Collider col in colliders)
         {
-            Destroy(col);
+            if (col != null)
+            {
+                Destroy(col);
+            }
         }
     }
 
@@ -445,7 +470,6 @@ public class AfterFishHoldingManager : MonoBehaviour
                 continue;
             }
 
-            // 使用 Renderer 的局部包围盒，避免直接使用世界轴对齐包围盒
             Bounds rendererBounds = renderer.localBounds;
 
             for (int x = 0; x < 2; x++)
@@ -460,7 +484,6 @@ public class AfterFishHoldingManager : MonoBehaviour
                             z == 0 ? rendererBounds.min.z : rendererBounds.max.z
                         );
 
-                        // 转换到世界坐标，再转换到鱼根物体的局部坐标
                         Vector3 worldCorner =
                             renderer.transform.TransformPoint(
                                 rendererLocalCorner
@@ -493,7 +516,6 @@ public class AfterFishHoldingManager : MonoBehaviour
         {
             box.center = localBounds.center;
 
-            // 缩小碰撞箱，减少超出鱼模型的部分
             float multiplier = Mathf.Clamp(
                 colliderSizeMultiplier,
                 0.3f,

@@ -17,6 +17,10 @@ public class DialogueManager : MonoBehaviour
     [Header("玩家")]
     public PlayerController playerController;
 
+    [Header("摄像机起身效果")]
+    [Tooltip("摄像机降低的距离，数值越大越贴近地面")]
+    public float cameraLowerDistance = 1.0f;
+
     [Header("第一段对话")]
     public List<string> dialogueList = new List<string>()
     {
@@ -40,104 +44,116 @@ public class DialogueManager : MonoBehaviour
     [Header("淡出时间")]
     public float fadeDuration = 1f;
 
-    // 第一段当前句子
     private int currentIndex = 0;
-
-    // 第二段当前句子
     private int currentIndex2 = 0;
 
-    // 第一段是否正在接受点击
     private bool firstDialogueActive = true;
-
-    // 第二段是否正在接受点击
     private bool secondDialogueActive = false;
-
-    // 整个开场对话是否已经彻底结束
     private bool dialogueFinished = false;
+    private bool firstDialogueFinishing = false;
 
     private CanvasGroup blackGroup;
     private CanvasGroup text2Group;
 
+    private Transform cameraTransform;
+    private Vector3 normalCameraPosition;
+    private Vector3 lowCameraPosition;
 
     void Start()
     {
         // 获取 CanvasGroup
-        blackGroup = black.GetComponent<CanvasGroup>();
-        text2Group = text2.GetComponent<CanvasGroup>();
+        if (black != null)
+            blackGroup = black.GetComponent<CanvasGroup>();
 
-        // =========================
-        // 第一段
-        // =========================
+        if (text2 != null)
+            text2Group = text2.GetComponent<CanvasGroup>();
 
-        dialogueText.gameObject.SetActive(true);
-
-        black.SetActive(true);
-        blackGroup.alpha = 1f;
-
-        // =========================
-        // 第二段关闭
-        // =========================
-
-        text2.gameObject.SetActive(false);
-        text2Group.alpha = 0f;
-
-        // =========================
-        // 显示第一句话
-        // =========================
-
-        if (dialogueList.Count > 0)
+        // 获取摄像机，并记录正常高度
+        if (playerController != null)
         {
-            currentIndex = 0;
-            dialogueText.text = dialogueList[0];
+            cameraTransform = playerController.cameraTransform;
+
+            if (cameraTransform != null)
+            {
+                normalCameraPosition = cameraTransform.localPosition;
+
+                lowCameraPosition = normalCameraPosition
+                    + Vector3.down * cameraLowerDistance;
+
+                // 关键修改：游戏开始时直接放到最低位置
+                cameraTransform.localPosition = lowCameraPosition;
+            }
+            else
+            {
+                Debug.LogError(
+                    "DialogueManager：请在 PlayerController 中设置 Camera Transform！"
+                );
+            }
         }
         else
         {
-            // 如果第一段没有内容，直接进入第二段
+            Debug.LogError(
+                "DialogueManager：请设置 Player Controller！"
+            );
+        }
+
+        // 显示第一段文字
+        if (dialogueText != null)
+            dialogueText.gameObject.SetActive(true);
+
+        // 开启黑幕
+        if (black != null)
+        {
+            black.SetActive(true);
+
+            if (blackGroup != null)
+                blackGroup.alpha = 1f;
+            else
+                Debug.LogError("黑幕物体缺少 CanvasGroup 组件！");
+        }
+
+        // 关闭第二段文字
+        if (text2 != null)
+        {
+            text2.gameObject.SetActive(false);
+
+            if (text2Group != null)
+                text2Group.alpha = 0f;
+        }
+
+        // 显示第一句话
+        if (dialogueList.Count > 0)
+        {
+            currentIndex = 0;
+
+            if (dialogueText != null)
+                dialogueText.text = dialogueList[0];
+        }
+        else
+        {
             firstDialogueActive = false;
+            firstDialogueFinishing = true;
             StartCoroutine(FinishFirstDialogue());
         }
 
-        // =========================
         // 开场期间禁止玩家移动
-        // =========================
-
         if (playerController != null)
-        {
             playerController.dialogueLocked = true;
-        }
     }
-
 
     void Update()
     {
-        // 整个对话已经结束
-        // 直接忽略所有鼠标输入
         if (dialogueFinished)
-        {
             return;
-        }
 
-        // =========================
-        // 第一段
-        // =========================
-
-        if (firstDialogueActive &&
-            Input.GetMouseButtonDown(0))
-        {
+        // 第一段对话：鼠标左键继续
+        if (firstDialogueActive && Input.GetMouseButtonDown(0))
             NextFirstDialogue();
-        }
 
-        // =========================
-        // 第二段
-        // =========================
-
-        if (secondDialogueActive &&
-            Input.GetMouseButtonDown(0))
-        {
+        // 第二段对话：鼠标左键继续
+        if (secondDialogueActive && Input.GetMouseButtonDown(0))
             NextSecondDialogue();
-        }
     }
-
 
     // =========================================================
     // 第一段对话
@@ -145,79 +161,96 @@ public class DialogueManager : MonoBehaviour
 
     void NextFirstDialogue()
     {
+        if (firstDialogueFinishing)
+            return;
+
         currentIndex++;
 
         if (currentIndex < dialogueList.Count)
         {
-            // 显示下一句
-            dialogueText.text =
-                dialogueList[currentIndex];
+            if (dialogueText != null)
+                dialogueText.text = dialogueList[currentIndex];
         }
         else
         {
-            // 第一段已经结束
-            // 立刻禁止继续点击第一段
-
             firstDialogueActive = false;
+            firstDialogueFinishing = true;
 
             StartCoroutine(FinishFirstDialogue());
         }
     }
 
-
     // =========================================================
-    // 第一段结束
+    // 第一段结束：黑幕淡出、低位停留、摄像机起身
     // =========================================================
 
     IEnumerator FinishFirstDialogue()
     {
-        // 再保险一次
         firstDialogueActive = false;
+        firstDialogueFinishing = true;
 
         // 隐藏第一段文字
-        dialogueText.gameObject.SetActive(false);
+        if (dialogueText != null)
+            dialogueText.gameObject.SetActive(false);
 
-        // =========================
         // 黑幕淡出
-        // =========================
-
-        float timer = 0f;
-
-        while (timer < fadeDuration)
+        if (blackGroup != null)
         {
-            timer += Time.deltaTime;
+            float timer = 0f;
 
-            blackGroup.alpha = Mathf.Lerp(
-                1f,
-                0f,
-                timer / fadeDuration
-            );
+            while (timer < fadeDuration)
+            {
+                timer += Time.deltaTime;
 
-            yield return null;
+                blackGroup.alpha = Mathf.Lerp(
+                    1f,
+                    0f,
+                    Mathf.Clamp01(timer / fadeDuration)
+                );
+
+                yield return null;
+            }
+
+            blackGroup.alpha = 0f;
         }
 
-        blackGroup.alpha = 0f;
-
         // 关闭黑幕
-        black.SetActive(false);
+        if (black != null)
+            black.SetActive(false);
 
-        // =========================
-        // 等待4秒
-        // =========================
+        // 此时摄像机已经处于最低位置，不再执行下降动画
 
-        // 此时玩家依然不能移动
-        // firstDialogueActive = false
-        // secondDialogueActive = false
+        if (cameraTransform != null)
+        {
+            // 低视角停留2秒
+            yield return new WaitForSeconds(2f);
 
-        yield return new WaitForSeconds(4f);
+            // 用2秒平滑升回原来的高度
+            float timer = 0f;
+            float riseDuration = 2f;
 
-        // =========================
-        // 开始第二段
-        // =========================
+            while (timer < riseDuration)
+            {
+                timer += Time.deltaTime;
 
+                float t = Mathf.Clamp01(timer / riseDuration);
+
+                cameraTransform.localPosition = Vector3.Lerp(
+                    lowCameraPosition,
+                    normalCameraPosition,
+                    Mathf.SmoothStep(0f, 1f, t)
+                );
+
+                yield return null;
+            }
+
+            // 确保最终高度准确
+            cameraTransform.localPosition = normalCameraPosition;
+        }
+
+        // 开始第二段对话
         StartSecondDialogue();
     }
-
 
     // =========================================================
     // 第二段开始
@@ -231,20 +264,19 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // 从第一句开始
         currentIndex2 = 0;
 
-        text2.text =
-            dialogueList2[0];
+        if (text2 != null)
+            text2.text = dialogueList2[0];
 
-        // 显示 Text2
-        text2Group.alpha = 1f;
-        text2.gameObject.SetActive(true);
+        if (text2Group != null)
+            text2Group.alpha = 1f;
 
-        // 开始接受鼠标左键
+        if (text2 != null)
+            text2.gameObject.SetActive(true);
+
         secondDialogueActive = true;
     }
-
 
     // =========================================================
     // 第二段对话
@@ -256,27 +288,17 @@ public class DialogueManager : MonoBehaviour
 
         if (currentIndex2 < dialogueList2.Count)
         {
-            // 显示下一句
-            text2.text =
-                dialogueList2[currentIndex2];
+            if (text2 != null)
+                text2.text = dialogueList2[currentIndex2];
         }
         else
         {
-            // =========================
-            // 第二段彻底结束
-            // =========================
-
-            // 立刻禁止继续点击
             secondDialogueActive = false;
-
-            // 整个开场对话已经结束
             dialogueFinished = true;
 
-            // 开始淡出
             StartCoroutine(FadeOutText2());
         }
     }
-
 
     // =========================================================
     // 第二段结束淡出
@@ -286,34 +308,31 @@ public class DialogueManager : MonoBehaviour
     {
         float timer = 0f;
 
-        while (timer < fadeDuration)
+        if (text2Group != null)
         {
-            timer += Time.deltaTime;
+            while (timer < fadeDuration)
+            {
+                timer += Time.deltaTime;
 
-            text2Group.alpha = Mathf.Lerp(
-                1f,
-                0f,
-                timer / fadeDuration
-            );
+                text2Group.alpha = Mathf.Lerp(
+                    1f,
+                    0f,
+                    Mathf.Clamp01(timer / fadeDuration)
+                );
 
-            yield return null;
+                yield return null;
+            }
+
+            text2Group.alpha = 0f;
         }
 
-        text2Group.alpha = 0f;
+        if (text2 != null)
+            text2.gameObject.SetActive(false);
 
-        // 关闭 Text2
-        text2.gameObject.SetActive(false);
-
-        // =========================
-        // 所有开场对话结束
-        // =========================
-
+        // 对话全部结束，恢复玩家控制
         if (playerController != null)
-        {
             playerController.dialogueLocked = false;
-        }
     }
-
 
     // =========================================================
     // 没有第二段对话时直接结束
@@ -326,8 +345,6 @@ public class DialogueManager : MonoBehaviour
         dialogueFinished = true;
 
         if (playerController != null)
-        {
             playerController.dialogueLocked = false;
-        }
     }
 }
