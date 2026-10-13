@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,8 +79,18 @@ public class AfterFishHoldingManager : MonoBehaviour
             HandleQKey();
     }
 
+    // Q键：手里有鱼时只丢鱼；手里没鱼时才捡鱼
     void HandleQKey()
     {
+        // 情况一：手里有鱼
+        // 丢下后立刻结束本次操作，不能顺便捡起其他鱼
+        if (IsHoldingFish())
+        {
+            DropCurrentFish();
+            return;
+        }
+
+        // 情况二：手里没鱼，寻找附近的鱼
         FishWorldPickup nearbyFish = FindNearestDroppedFish();
 
         if (nearbyFish != null)
@@ -88,10 +99,8 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        if (IsHoldingFish())
-            DropCurrentFish();
-        else
-            Debug.Log("附近没有可以捡起的鱼。");
+        // 情况三：手里没鱼，附近也没有鱼
+        Debug.Log("附近没有可以捡起的鱼。");
     }
 
     bool IsHoldingFish()
@@ -122,6 +131,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         int selectedIndex = SelectFishIndex(validIndices);
         FishEntry entry = fishList[selectedIndex];
 
+        // 获得新鱼前，丢掉手里的旧鱼
         DropCurrentFish();
 
         GameObject newFish = Instantiate(entry.fishModel);
@@ -164,6 +174,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         int selectedIndex = SelectFishIndex(validIndices);
         FishEntry entry = fishList[selectedIndex];
 
+        // 钓到新鱼时，先丢掉手里的旧鱼
         DropCurrentFish();
 
         GameObject fish = Instantiate(entry.fishModel);
@@ -423,6 +434,8 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
+        // 正常情况下，进入这里时手里没有鱼。
+        // 保留这层保护，避免其他脚本调用时出现两条手持鱼。
         if (IsHoldingFish() && currentFish != fish)
             DropCurrentFish();
 
@@ -442,6 +455,7 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         currentFish = fish;
         currentFishIndex = fishIndex;
+        lastFishIndex = fishIndex;
 
         Debug.Log("捡起鱼：" + fish.name);
     }
