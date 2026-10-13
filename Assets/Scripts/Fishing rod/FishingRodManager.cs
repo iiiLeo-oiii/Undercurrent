@@ -40,6 +40,10 @@ public class Fishingrodmanager : MonoBehaviour
     public float returnDuration = 1.2f;
     public float returnArcHeight = 1.5f;
 
+    [Header("取消钓鱼后的收回动画")]
+    public float cancelReturnDuration = 0.8f;
+    public float cancelReturnArcHeight = 1.0f;
+
     private Animator animator;
     private bool isCasting = false;
     private bool isFishingCastActive = false;
@@ -70,7 +74,9 @@ public class Fishingrodmanager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Fishingrodmanager：没有设置实际 Fishing Float！");
+            Debug.LogError(
+                "Fishingrodmanager：没有设置实际 Fishing Float！"
+            );
         }
 
         if (decorativeFloat != null)
@@ -85,7 +91,9 @@ public class Fishingrodmanager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Fishingrodmanager：没有设置 Decorative Float！");
+            Debug.LogError(
+                "Fishingrodmanager：没有设置 Decorative Float！"
+            );
         }
 
         if (viewTransform == null && Camera.main != null)
@@ -204,38 +212,43 @@ public class Fishingrodmanager : MonoBehaviour
 
     void Update()
     {
+        // 抛竿动画、收回动画期间禁止所有操作
         if (!hasRod || isCasting || isReturning)
             return;
 
-        // E 键：优先判断是否正在钓鱼，确保等待鱼咬钩时也能退出
-        if (Input.GetKeyDown(KeyCode.E))
+        if (!Input.GetKeyDown(KeyCode.E))
+            return;
+
+        // 情况一：正在进行钓鱼小游戏
+        if (FishingMinigame.IsPlaying)
         {
-            // 情况一：正在进行钓鱼小游戏
-            if (FishingMinigame.IsPlaying)
+            if (fishingMinigame != null)
             {
-                if (fishingMinigame != null)
-                {
-                    fishingMinigame.CancelGame();
-                }
-
-                FinishFishingCast();
-
-                Debug.Log("已退出钓鱼小游戏。");
-                return;
+                fishingMinigame.CancelGame();
             }
 
-            // 情况二：鱼漂已经抛出，正在等待鱼咬钩
+            // 取消小游戏后，让鱼漂飞回
             if (isFishingCastActive)
             {
+                StartCoroutine(CancelFishingAndReturn());
+            }
+            else
+            {
                 FinishFishingCast();
-
-                Debug.Log("已取消钓鱼等待。");
-                return;
             }
 
-            // 情况三：当前没有进行钓鱼，开始抛竿
-            StartCoroutine(CastFishingRod());
+            return;
         }
+
+        // 情况二：已经抛竿，正在等待鱼咬钩
+        if (isFishingCastActive)
+        {
+            StartCoroutine(CancelFishingAndReturn());
+            return;
+        }
+
+        // 情况三：没有正在进行的钓鱼，开始抛竿
+        StartCoroutine(CastFishingRod());
     }
 
     void UpdateFishingLine()
@@ -333,7 +346,9 @@ public class Fishingrodmanager : MonoBehaviour
 
         if (floatRb == null)
         {
-            Debug.LogError("Fishingrodmanager：实际鱼漂没有 Rigidbody！");
+            Debug.LogError(
+                "Fishingrodmanager：实际鱼漂没有 Rigidbody！"
+            );
 
             fishingFloat.SetActive(false);
             isCasting = false;
@@ -351,12 +366,99 @@ public class Fishingrodmanager : MonoBehaviour
             castPoint.forward * forwardForce +
             Vector3.up * upwardForce;
 
-        floatRb.AddForce(castDirection, ForceMode.VelocityChange);
+        floatRb.AddForce(
+            castDirection,
+            ForceMode.VelocityChange
+        );
 
         isFishingCastActive = true;
         isCasting = false;
 
         UpdateFishingLine();
+    }
+
+    // 取消钓鱼：鱼漂飞回鱼竿
+    IEnumerator CancelFishingAndReturn()
+    {
+        // 防止重复启动收回动画
+        if (isReturning)
+            yield break;
+
+        // 立即锁定操作，动画结束前不能再次抛竿或取消
+        isReturning = true;
+
+        if (fishingFloat == null)
+        {
+            FinishFishingCast();
+            yield break;
+        }
+
+        // 停止鱼漂等待咬钩的逻辑
+        FishingFloat floatScript =
+            fishingFloat.GetComponent<FishingFloat>();
+
+        if (floatScript != null)
+        {
+            floatScript.ResetForNextCast();
+        }
+
+        // 停止物理运动，交给动画控制位置
+        Rigidbody rb =
+            fishingFloat.GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.useGravity = false;
+            rb.isKinematic = true;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+
+        Vector3 startPosition =
+            fishingFloat.transform.position;
+
+        Vector3 endPosition = castPoint != null
+            ? castPoint.position
+            : transform.position;
+
+        float duration = Mathf.Max(
+            0.05f,
+            cancelReturnDuration
+        );
+
+        float elapsed = 0f;
+
+        // 沿弧线飞回
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+            float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+            float arc =
+                Mathf.Sin(t * Mathf.PI) *
+                cancelReturnArcHeight;
+
+            fishingFloat.transform.position =
+                Vector3.Lerp(
+                    startPosition,
+                    endPosition,
+                    smoothT
+                )
+                + Vector3.up * arc;
+
+            yield return null;
+        }
+
+        // 精确落在收竿位置
+        fishingFloat.transform.position = endPosition;
+
+        // 动画结束后才允许再次操作
+        FinishFishingCast();
+
+        Debug.Log("已取消钓鱼，鱼漂已收回。");
     }
 
     // 钓鱼成功时，由 FishingMinigame 调用
@@ -456,7 +558,7 @@ public class Fishingrodmanager : MonoBehaviour
         FinishFishingCast();
     }
 
-    // 结束本次钓鱼
+    // 结束本次钓鱼并恢复鱼竿状态
     public void FinishFishingCast()
     {
         isFishingCastActive = false;
