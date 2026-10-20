@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,7 +34,7 @@ public class AfterFishHoldingManager : MonoBehaviour
     [Min(1)] public int minRandomScale = 1;
     [Min(1)] public int maxRandomScale = 8;
 
-    [Header("地上鱼的交互")]
+    [Header("地上物品的交互")]
     public float pickupDistance = 2f;
     public float dropForwardDistance = 1.1f;
 
@@ -43,15 +42,35 @@ public class AfterFishHoldingManager : MonoBehaviour
     [Range(0.3f, 1f)]
     public float colliderSizeMultiplier = 0.3f;
 
+    [Header("特殊物品：老照片")]
+    [Tooltip("直接拖入场景中的老照片 GameObject，不需要加入 fishList")]
+    public GameObject oldPhoto;
+
+    [Tooltip("老照片拿在手上的局部位置")]
+    public Vector3 photoHeldLocalPosition = Vector3.zero;
+
+    [Tooltip("老照片拿在手上的局部旋转")]
+    public Vector3 photoHeldLocalRotation = Vector3.zero;
+
+    [Tooltip("老照片拿在手上的局部缩放")]
+    public Vector3 photoHeldLocalScale = Vector3.one;
+
+    // 当前手持物品
     private GameObject currentFish;
     private int currentFishIndex = -1;
     private int lastFishIndex = -1;
+    private bool currentIsPhoto = false;
 
     private System.Random fishRandom;
 
+    // 正在飞回的物品
     private GameObject returningFish;
     private int returningFishIndex = -1;
     private Vector3 returningFishScale;
+    private bool returningIsPhoto = false;
+
+    // 箱子触发后，等待下一次成功钓鱼
+    private bool photoCatchReady = false;
 
     void Awake()
     {
@@ -68,6 +87,15 @@ public class AfterFishHoldingManager : MonoBehaviour
             if (entry != null && entry.fishModel != null)
                 entry.fishModel.SetActive(false);
         }
+
+        // 老照片是场景中的独立物体。
+        // 先隐藏，等触发特殊钓鱼后再显示。
+        if (oldPhoto != null)
+            oldPhoto.SetActive(false);
+        else
+            Debug.LogWarning(
+                "AfterFishHoldingManager：还没有设置 Old Photo！"
+            );
     }
 
     void Update()
@@ -79,18 +107,17 @@ public class AfterFishHoldingManager : MonoBehaviour
             HandleQKey();
     }
 
-    // Q键：手里有鱼时只丢鱼；手里没鱼时才捡鱼
+    // Q键逻辑：
+    // 手上有物品时，只丢下。
+    // 手上没有物品时，才允许捡起附近的物品。
     void HandleQKey()
     {
-        // 情况一：手里有鱼
-        // 丢下后立刻结束本次操作，不能顺便捡起其他鱼
         if (IsHoldingFish())
         {
             DropCurrentFish();
             return;
         }
 
-        // 情况二：手里没鱼，寻找附近的鱼
         FishWorldPickup nearbyFish = FindNearestDroppedFish();
 
         if (nearbyFish != null)
@@ -99,8 +126,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 情况三：手里没鱼，附近也没有鱼
-        Debug.Log("附近没有可以捡起的鱼。");
+        Debug.Log("附近没有可以捡起的物品。");
     }
 
     bool IsHoldingFish()
@@ -111,12 +137,33 @@ public class AfterFishHoldingManager : MonoBehaviour
             && currentFish.transform.parent == fishHoldPoint;
     }
 
-    // 保留原来的获得随机鱼功能
+    // 箱子里的鱼触发后调用。
+    // 只设置标记，不会立即给照片。
+    public void MarkPhotoCatchReady()
+    {
+        if (photoCatchReady)
+            return;
+
+        photoCatchReady = true;
+
+        Debug.Log("箱子已触发：下一次成功钓鱼将获得老照片。");
+    }
+
+    // 保留原来的获得随机鱼功能。
+    // 如果照片标记已经触发，这里也会优先给照片。
     public void CatchRandomFish()
     {
+        if (photoCatchReady)
+        {
+            GivePhotoDirectly();
+            return;
+        }
+
         if (fishHoldPoint == null)
         {
-            Debug.LogError("AfterFishHoldingManager：没有设置 Fish Hold Point！");
+            Debug.LogError(
+                "AfterFishHoldingManager：没有设置 Fish Hold Point！"
+            );
             return;
         }
 
@@ -131,7 +178,6 @@ public class AfterFishHoldingManager : MonoBehaviour
         int selectedIndex = SelectFishIndex(validIndices);
         FishEntry entry = fishList[selectedIndex];
 
-        // 获得新鱼前，丢掉手里的旧鱼
         DropCurrentFish();
 
         GameObject newFish = Instantiate(entry.fishModel);
@@ -143,25 +189,31 @@ public class AfterFishHoldingManager : MonoBehaviour
         newFish.transform.localPosition = entry.localPosition;
         newFish.transform.localEulerAngles = entry.localRotation;
         newFish.SetActive(true);
-
-        Vector3 finalScale = GetFishScale(entry);
-        newFish.transform.localScale = finalScale;
+        newFish.transform.localScale = GetFishScale(entry);
 
         currentFish = newFish;
         currentFishIndex = selectedIndex;
+        currentIsPhoto = false;
         lastFishIndex = selectedIndex;
 
         Debug.Log("获得鱼：" + currentFish.name);
     }
 
-    // 创建飞回途中的鱼：这个实例最后也会成为手持的鱼
+    // 创建飞回途中的物品。
+    // 普通鱼使用 Instantiate；老照片直接使用场景中的对象。
     public GameObject CreateFishForReturn(Vector3 startPosition)
     {
         if (fishHoldPoint == null)
         {
-            Debug.LogError("AfterFishHoldingManager：没有设置 Fish Hold Point！");
+            Debug.LogError(
+                "AfterFishHoldingManager：没有设置 Fish Hold Point！"
+            );
             return null;
         }
+
+        // 先检查是否需要给照片。
+        if (photoCatchReady)
+            return CreatePhotoForReturn(startPosition);
 
         List<int> validIndices = GetValidFishIndices();
 
@@ -174,7 +226,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         int selectedIndex = SelectFishIndex(validIndices);
         FishEntry entry = fishList[selectedIndex];
 
-        // 钓到新鱼时，先丢掉手里的旧鱼
+        // 新物品替换旧物品：旧物品先落到地上。
         DropCurrentFish();
 
         GameObject fish = Instantiate(entry.fishModel);
@@ -188,7 +240,6 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         returningFishScale = GetFishScale(entry);
 
-        // 计算不挂在 FishHoldPoint 下时对应的世界缩放
         Vector3 holdScale = fishHoldPoint.lossyScale;
 
         fish.transform.localScale = new Vector3(
@@ -201,23 +252,130 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         returningFish = fish;
         returningFishIndex = selectedIndex;
+        returningIsPhoto = false;
 
         Debug.Log("开始收回鱼：" + fish.name);
 
         return fish;
     }
 
-    // 飞回结束后，将同一个鱼实例放到手上
+    GameObject CreatePhotoForReturn(Vector3 startPosition)
+    {
+        if (oldPhoto == null)
+        {
+            Debug.LogError(
+                "AfterFishHoldingManager：触发了照片奖励，但没有设置 Old Photo！"
+            );
+            return null;
+        }
+
+        // 消耗标记：这次成功钓鱼已经使用照片奖励。
+        photoCatchReady = false;
+
+        // 如果手里有旧物品，先将其放下。
+        DropCurrentFish();
+
+        GameObject photo = oldPhoto;
+
+        RemoveWorldPhysics(photo);
+
+        photo.transform.SetParent(null);
+        photo.transform.position = startPosition;
+        photo.transform.rotation = Quaternion.Euler(
+            photoHeldLocalRotation
+        );
+
+        // 飞行期间使用适应 FishHoldPoint 缩放的世界缩放。
+        Vector3 holdScale = fishHoldPoint.lossyScale;
+
+        photo.transform.localScale = new Vector3(
+            photoHeldLocalScale.x * holdScale.x,
+            photoHeldLocalScale.y * holdScale.y,
+            photoHeldLocalScale.z * holdScale.z
+        );
+
+        photo.SetActive(true);
+
+        returningFish = photo;
+        returningFishIndex = -1;
+        returningFishScale = photoHeldLocalScale;
+        returningIsPhoto = true;
+
+        Debug.Log("特殊奖励：开始收回老照片。");
+
+        return photo;
+    }
+
+    // 照片奖励触发后，如果其他系统直接调用 CatchRandomFish，
+    // 也能正确获得照片。
+    void GivePhotoDirectly()
+    {
+        if (oldPhoto == null || fishHoldPoint == null)
+        {
+            Debug.LogError(
+                "无法获得老照片：请检查 Old Photo 和 Fish Hold Point。"
+            );
+            return;
+        }
+
+        photoCatchReady = false;
+
+        DropCurrentFish();
+        RemoveWorldPhysics(oldPhoto);
+
+        oldPhoto.transform.SetParent(fishHoldPoint, false);
+        oldPhoto.transform.localPosition = photoHeldLocalPosition;
+        oldPhoto.transform.localEulerAngles = photoHeldLocalRotation;
+        oldPhoto.transform.localScale = photoHeldLocalScale;
+        oldPhoto.SetActive(true);
+
+        currentFish = oldPhoto;
+        currentFishIndex = -1;
+        currentIsPhoto = true;
+
+        Debug.Log("获得特殊物品：老照片。");
+    }
+
+    // 飞回结束后，将同一个物品放到手上。
     public void FinishFishReturn(GameObject fish)
     {
         if (fish == null || fish != returningFish)
         {
-            Debug.LogWarning("收鱼失败：飞回的鱼模型不存在或不匹配。");
+            Debug.LogWarning("收回物品失败：飞回的物品不存在或不匹配。");
             return;
         }
 
-        if (fishHoldPoint == null ||
-            returningFishIndex < 0 ||
+        if (fishHoldPoint == null)
+        {
+            Debug.LogError(
+                "AfterFishHoldingManager：没有设置 Fish Hold Point！"
+            );
+            return;
+        }
+
+        // 特殊情况：飞回的是老照片。
+        if (returningIsPhoto)
+        {
+            fish.transform.SetParent(fishHoldPoint, false);
+            fish.transform.localPosition = photoHeldLocalPosition;
+            fish.transform.localEulerAngles = photoHeldLocalRotation;
+            fish.transform.localScale = photoHeldLocalScale;
+            fish.SetActive(true);
+
+            currentFish = fish;
+            currentFishIndex = -1;
+            currentIsPhoto = true;
+
+            returningFish = null;
+            returningFishIndex = -1;
+            returningIsPhoto = false;
+
+            Debug.Log("老照片已飞回并拿在手上。");
+            return;
+        }
+
+        // 普通鱼的原有逻辑。
+        if (returningFishIndex < 0 ||
             returningFishIndex >= fishList.Count)
         {
             Debug.LogError("AfterFishHoldingManager：鱼的位置或索引无效！");
@@ -234,10 +392,12 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         currentFish = fish;
         currentFishIndex = returningFishIndex;
+        currentIsPhoto = false;
         lastFishIndex = returningFishIndex;
 
         returningFish = null;
         returningFishIndex = -1;
+        returningIsPhoto = false;
 
         Debug.Log("鱼已飞回并拿在手上：" + currentFish.name);
     }
@@ -286,26 +446,42 @@ public class AfterFishHoldingManager : MonoBehaviour
         {
             currentFish = null;
             currentFishIndex = -1;
+            currentIsPhoto = false;
             return;
         }
 
         GameObject fish = currentFish;
         int fishIndex = currentFishIndex;
+        bool droppingPhoto = currentIsPhoto;
 
-        if (fishIndex < 0 || fishList == null
-            || fishIndex >= fishList.Count
-            || fishList[fishIndex] == null)
+        Vector3 heldLocalPosition;
+        Vector3 heldLocalRotation;
+        Vector3 heldLocalScale;
+
+        if (droppingPhoto)
         {
-            Debug.LogError("无法放鱼：鱼列表索引无效。");
-            return;
+            heldLocalPosition = photoHeldLocalPosition;
+            heldLocalRotation = photoHeldLocalRotation;
+            heldLocalScale = photoHeldLocalScale;
         }
+        else
+        {
+            if (fishIndex < 0 || fishList == null
+                || fishIndex >= fishList.Count
+                || fishList[fishIndex] == null)
+            {
+                Debug.LogError("无法放鱼：鱼列表索引无效。");
+                return;
+            }
 
-        Vector3 heldLocalPosition = fishList[fishIndex].localPosition;
-        Vector3 heldLocalRotation = fishList[fishIndex].localRotation;
-        float heldScale = fish.transform.localScale.x;
+            heldLocalPosition = fishList[fishIndex].localPosition;
+            heldLocalRotation = fishList[fishIndex].localRotation;
+            heldLocalScale = fish.transform.localScale;
+        }
 
         currentFish = null;
         currentFishIndex = -1;
+        currentIsPhoto = false;
 
         fish.transform.SetParent(null, true);
 
@@ -318,7 +494,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("没有设置 Player Camera，鱼将在原位置放下。");
+            Debug.LogWarning("没有设置 Player Camera，物品将在原位置放下。");
         }
 
         fish.SetActive(true);
@@ -329,10 +505,12 @@ public class AfterFishHoldingManager : MonoBehaviour
             pickup = fish.AddComponent<FishWorldPickup>();
 
         pickup.owner = this;
-        pickup.fishEntryIndex = fishIndex;
+        pickup.fishEntryIndex = droppingPhoto ? -1 : fishIndex;
         pickup.heldLocalPosition = heldLocalPosition;
         pickup.heldLocalRotation = heldLocalRotation;
-        pickup.heldScale = heldScale;
+        pickup.heldLocalScale = heldLocalScale;
+        pickup.heldScale = heldLocalScale.x;
+        pickup.isPhoto = droppingPhoto;
 
         BoxCollider box = fish.GetComponent<BoxCollider>();
 
@@ -358,7 +536,7 @@ public class AfterFishHoldingManager : MonoBehaviour
                 + Vector3.up * 0.5f;
         }
 
-        Debug.Log("放下鱼：" + fish.name);
+        Debug.Log("放下物品：" + fish.name);
     }
 
     FishWorldPickup FindNearestDroppedFish()
@@ -421,21 +599,25 @@ public class AfterFishHoldingManager : MonoBehaviour
 
         GameObject fish = pickup.gameObject;
 
+        bool pickingUpPhoto = pickup.isPhoto;
         int fishIndex = pickup.fishEntryIndex;
+
         Vector3 heldPosition = pickup.heldLocalPosition;
         Vector3 heldRotation = pickup.heldLocalRotation;
-        float heldScale = pickup.heldScale;
+        Vector3 heldScale = pickup.heldLocalScale;
 
-        if (fishIndex < 0 || fishList == null
-            || fishIndex >= fishList.Count
-            || fishList[fishIndex] == null)
+        if (!pickingUpPhoto)
         {
-            Debug.LogError("无法捡鱼：鱼列表索引无效。");
-            return;
+            if (fishIndex < 0 || fishList == null
+                || fishIndex >= fishList.Count
+                || fishList[fishIndex] == null)
+            {
+                Debug.LogError("无法捡鱼：鱼列表索引无效。");
+                return;
+            }
         }
 
-        // 正常情况下，进入这里时手里没有鱼。
-        // 保留这层保护，避免其他脚本调用时出现两条手持鱼。
+        // 捡起新物品前，先放下手中已有的物品。
         if (IsHoldingFish() && currentFish != fish)
             DropCurrentFish();
 
@@ -449,15 +631,22 @@ public class AfterFishHoldingManager : MonoBehaviour
         fish.transform.SetParent(fishHoldPoint, false);
         fish.transform.localPosition = heldPosition;
         fish.transform.localEulerAngles = heldRotation;
-        fish.transform.localScale = Vector3.one * heldScale;
-
+        fish.transform.localScale = heldScale;
         fish.SetActive(true);
 
         currentFish = fish;
-        currentFishIndex = fishIndex;
-        lastFishIndex = fishIndex;
+        currentFishIndex = pickingUpPhoto ? -1 : fishIndex;
+        currentIsPhoto = pickingUpPhoto;
 
-        Debug.Log("捡起鱼：" + fish.name);
+        if (pickingUpPhoto)
+        {
+            Debug.Log("捡起老照片。");
+        }
+        else
+        {
+            lastFishIndex = fishIndex;
+            Debug.Log("捡起鱼：" + fish.name);
+        }
     }
 
     void RemoveWorldPhysics(GameObject fish)
