@@ -72,6 +72,10 @@ public class AfterFishHoldingManager : MonoBehaviour
     // 箱子触发后，等待下一次成功钓鱼
     private bool photoCatchReady = false;
 
+    // 新增：本次游戏运行期间，老照片是否已经发放。
+    // 一旦为 true，后续箱子触发不再提供照片奖励。
+    private bool photoAlreadyObtained = false;
+
     void Awake()
     {
         fishRandom = new System.Random(Guid.NewGuid().GetHashCode());
@@ -138,9 +142,15 @@ public class AfterFishHoldingManager : MonoBehaviour
     }
 
     // 箱子里的鱼触发后调用。
-    // 只设置标记，不会立即给照片。
+    // 照片已经获得过，就不再允许重新触发奖励。
     public void MarkPhotoCatchReady()
     {
+        if (photoAlreadyObtained)
+        {
+            Debug.Log("老照片已经获得过，不会再次触发奖励。");
+            return;
+        }
+
         if (photoCatchReady)
             return;
 
@@ -150,7 +160,7 @@ public class AfterFishHoldingManager : MonoBehaviour
     }
 
     // 保留原来的获得随机鱼功能。
-    // 如果照片标记已经触发，这里也会优先给照片。
+    // 如果照片标记已经触发，这里会优先给照片。
     public void CatchRandomFish()
     {
         if (photoCatchReady)
@@ -269,8 +279,18 @@ public class AfterFishHoldingManager : MonoBehaviour
             return null;
         }
 
-        // 消耗标记：这次成功钓鱼已经使用照片奖励。
+        // 新增：再次检查，防止照片重复发放。
+        if (photoAlreadyObtained)
+        {
+            photoCatchReady = false;
+            Debug.LogWarning("老照片已经获得过，取消重复奖励。");
+            return null;
+        }
+
+        // 照片奖励在开始飞回时立即消耗并锁定。
+        // 不必等待动画结束，避免动画期间重复触发。
         photoCatchReady = false;
+        photoAlreadyObtained = true;
 
         // 如果手里有旧物品，先将其放下。
         DropCurrentFish();
@@ -307,7 +327,7 @@ public class AfterFishHoldingManager : MonoBehaviour
     }
 
     // 照片奖励触发后，如果其他系统直接调用 CatchRandomFish，
-    // 也能正确获得照片。
+    // 也能正确获得照片，但不能重复获得。
     void GivePhotoDirectly()
     {
         if (oldPhoto == null || fishHoldPoint == null)
@@ -318,7 +338,16 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
+        // 新增：防止其他系统重复调用时再次获得照片。
+        if (photoAlreadyObtained)
+        {
+            photoCatchReady = false;
+            Debug.LogWarning("老照片已经获得过，取消重复奖励。");
+            return;
+        }
+
         photoCatchReady = false;
+        photoAlreadyObtained = true;
 
         DropCurrentFish();
         RemoveWorldPhysics(oldPhoto);

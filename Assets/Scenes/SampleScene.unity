@@ -3247,7 +3247,7 @@ MonoBehaviour:
   playerController: {fileID: 839595492}
   cameraBobPivot: {fileID: 1315608347}
   walkFrequency: 1.8
-  walkAmplitude: 0.7
+  walkAmplitude: 0.2
   sprintFrequency: 2.8
   sprintAmplitude: 0.045
   crouchFrequency: 1.5
