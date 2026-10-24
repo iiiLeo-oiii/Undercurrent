@@ -1,0 +1,1070 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 12299,
+      "max": [
+        -1.016885757446289,
+        10.273866653442383,
+        12.785499572753906
+      ],
+      "min": [
+        -15.443613052368164,
+        0.0076750218868255615,
+        1.930955410003662
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 147588,
+      "componentType": 5126,
+      "count": 12299,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 12299,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 12299,
+      "max": [
+        0.9940834045410156,
+        0.9944791793823242
+      ],
+      "min": [
+        0.007380843162536621,
+        0.019774436950683594
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 23208,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 295176,
+      "componentType": 5126,
+      "count": 13772,
+      "max": [
+        -9.600016593933105,
+        6.98129940032959,
+        11.06241512298584
+      ],
+      "min": [
+        -13.430882453918457,
+        1.5014275312423706,
+        5.511133670806885
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 460440,
+      "componentType": 5126,
+      "count": 13772,
+      "max": [
+        0.9998820424079895,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -0.9995846748352051,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 196784,
+      "componentType": 5126,
+      "count": 13772,
+      "max": [
+        0.9999956488609314,
+        0.9999834299087524,
+        0.9999088644981384,
+        1.0
+      ],
+      "min": [
+        -0.9998855590820313,
+        -1.0,
+        -0.9988613128662109,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 98392,
+      "componentType": 5126,
+      "count": 13772,
+      "max": [
+        0.9673274755477905,
+        0.9913111925125122
+      ],
+      "min": [
+        0.014601260423660278,
+        0.01877310872077942
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 92832,
+      "componentType": 5125,
+      "count": 33906,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 625704,
+      "componentType": 5126,
+      "count": 4166,
+      "max": [
+        -1.1152799129486084,
+        9.38907527923584,
+        12.763154029846191
+      ],
+      "min": [
+        -14.217913627624512,
+        0.008586466312408447,
+        2.3447189331054688
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 675696,
+      "componentType": 5126,
+      "count": 4166,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 417136,
+      "componentType": 5126,
+      "count": 4166,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 208568,
+      "componentType": 5126,
+      "count": 4166,
+      "max": [
+        0.9935855865478516,
+        0.9933887720108032
+      ],
+      "min": [
+        0.004468344151973724,
+        0.005556163378059864
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 228456,
+      "componentType": 5125,
+      "count": 7896,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 725688,
+      "componentType": 5126,
+      "count": 3292,
+      "max": [
+        -0.15243303775787354,
+        5.889165878295898,
+        12.876913070678711
+      ],
+      "min": [
+        -15.215656280517578,
+        0.03910711035132408,
+        3.4184350967407227
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 765192,
+      "componentType": 5126,
+      "count": 3292,
+      "max": [
+        0.9934703707695007,
+        1.0,
+        0.9903554916381836
+      ],
+      "min": [
+        -0.9934703707695007,
+        -1.0,
+        -0.9903554916381836
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 483792,
+      "componentType": 5126,
+      "count": 3292,
+      "max": [
+        1.0,
+        0.999995768070221,
+        0.9999996423721313,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -0.9999937415122986,
+        -0.9999996423721313,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 241896,
+      "componentType": 5126,
+      "count": 3292,
+      "max": [
+        0.48376965522766113,
+        0.9844357371330261
+      ],
+      "min": [
+        0.014927014708518982,
+        0.5142863392829895
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 260040,
+      "componentType": 5125,
+      "count": 7140,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 804696,
+      "componentType": 5126,
+      "count": 17541,
+      "max": [
+        -0.08524119853973389,
+        6.098508834838867,
+        14.263042449951172
+      ],
+      "min": [
+        -15.12211799621582,
+        -0.01782149448990822,
+        3.1677000522613525
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1015188,
+      "componentType": 5126,
+      "count": 17541,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 536464,
+      "componentType": 5126,
+      "count": 17541,
+      "max": [
+        1.0,
+        0.9999942183494568,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 268232,
+      "componentType": 5126,
+      "count": 17541,
+      "max": [
+        0.9906740784645081,
+        0.9978390336036682
+      ],
+      "min": [
+        0.004809081554412842,
+        -0.0008676052093505859
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 288600,
+      "componentType": 5125,
+      "count": 47766,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1225680,
+      "componentType": 5126,
+      "count": 1246,
+      "max": [
+        -2.8050997257232666,
+        9.48324966430664,
+        12.598240852355957
+      ],
+      "min": [
+        -15.340303421020508,
+        0.006270609796047211,
+        2.9984090328216553
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1240632,
+      "componentType": 5126,
+      "count": 1246,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 817120,
+      "componentType": 5126,
+      "count": 1246,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 408560,
+      "componentType": 5126,
+      "count": 1246,
+      "max": [
+        0.9909324645996094,
+        0.9889504313468933
+      ],
+      "min": [
+        0.004880756139755249,
+        0.005873255431652069
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 479664,
+      "componentType": 5125,
+      "count": 2052,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1255584,
+      "componentType": 5126,
+      "count": 356,
+      "max": [
+        -2.7365665435791016,
+        4.711606025695801,
+        12.671950340270996
+      ],
+      "min": [
+        -15.47851276397705,
+        0.007540866732597351,
+        3.0063910484313965
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1259856,
+      "componentType": 5126,
+      "count": 356,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 837056,
+      "componentType": 5126,
+      "count": 356,
+      "max": [
+        1.0,
+        0.9999974370002747,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -0.9999996423721313,
+        -1.0,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 418528,
+      "componentType": 5126,
+      "count": 356,
+      "max": [
+        0.9897408485412598,
+        0.9898213744163513
+      ],
+      "min": [
+        0.00304451584815979,
+        0.005477128550410271
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 487872,
+      "componentType": 5125,
+      "count": 600,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "NPHoa_Kagoby (https://sketchfab.com/primagenevieve)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/shotengai-maple-room-eb6d12df45d540d4996e27ad78853ed7",
+      "title": "Shotengai - Maple Room"
+    },
+    "generator": "Sketchfab-13.51.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 490272,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 421376,
+      "byteOffset": 490272,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1264128,
+      "byteOffset": 911648,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 842752,
+      "byteOffset": 2175776,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 3018528,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/Material_darkwood_baseColor.png"
+    },
+    {
+      "uri": "textures/Material_darkwood_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Material_darkwood_normal.png"
+    },
+    {
+      "uri": "textures/Shotengai_Maple_room_REShotengai_Maple_room_REFood_baseColor.png"
+    },
+    {
+      "uri": "textures/Shotengai_Maple_room_REShotengai_Maple_room_REFood_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Shotengai_Maple_room_REShotengai_Maple_room_REFood_normal.png"
+    },
+    {
+      "uri": "textures/Material_Wood_Gate_baseColor.png"
+    },
+    {
+      "uri": "textures/Material_Wood_Gate_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Material_Wood_Gate_normal.png"
+    },
+    {
+      "uri": "textures/Anythingtranspa_baseColor.png"
+    },
+    {
+      "uri": "textures/Anythingtranspa_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Anythingtranspa_normal.png"
+    },
+    {
+      "uri": "textures/Not_Transpa_baseColor.png"
+    },
+    {
+      "uri": "textures/Not_Transpa_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Not_Transpa_normal.png"
+    },
+    {
+      "uri": "textures/Material_Wall_Piles_baseColor.png"
+    },
+    {
+      "uri": "textures/Material_Wall_Piles_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Material_Wall_Piles_normal.png"
+    },
+    {
+      "uri": "textures/Materiall_FloorTatami_baseColor.png"
+    },
+    {
+      "uri": "textures/Materiall_FloorTatami_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Materiall_FloorTatami_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Material_darkwood",
+      "normalTexture": {
+        "index": 2
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Shotengai_Maple_room_REShotengai_Maple_room_REFood",
+      "normalTexture": {
+        "index": 5
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 3
+        },
+        "metallicRoughnessTexture": {
+          "index": 4
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Material_Wood_Gate",
+      "normalTexture": {
+        "index": 8
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 6
+        },
+        "metallicRoughnessTexture": {
+          "index": 7
+        }
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "emissiveFactor": [
+        0.41392485793968875,
+        0.08602506807619703,
+        0.01732038948960696
+      ],
+      "name": "Anythingtranspa",
+      "normalTexture": {
+        "index": 11
+      },
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          0.8152405797808145
+        ],
+        "baseColorTexture": {
+          "index": 9
+        },
+        "metallicRoughnessTexture": {
+          "index": 10
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Not_Transpa",
+      "normalTexture": {
+        "index": 14
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 12
+        },
+        "metallicRoughnessTexture": {
+          "index": 13
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Material_Wall_Piles",
+      "normalTexture": {
+        "index": 17
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 15
+        },
+        "metallicRoughnessTexture": {
+          "index": 16
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Materiall_FloorTatami",
+      "normalTexture": {
+        "index": 20
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 18
+        },
+        "metallicRoughnessTexture": {
+          "index": 19
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Shotengai_Maple_room_RE1_Material_darkwood_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 4,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Shotengai_Maple_room_RE:Shotengai_Maple_room_RE:Food_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 6,
+            "POSITION": 5,
+            "TANGENT": 7,
+            "TEXCOORD_0": 8
+          },
+          "indices": 9,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Material_Wood_Gate_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 11,
+            "POSITION": 10,
+            "TANGENT": 12,
+            "TEXCOORD_0": 13
+          },
+          "indices": 14,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Anythingtranspa_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 16,
+            "POSITION": 15,
+            "TANGENT": 17,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 3,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Not_Transpa_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 21,
+            "POSITION": 20,
+            "TANGENT": 22,
+            "TEXCOORD_0": 23
+          },
+          "indices": 24,
+          "material": 4,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Material_Wall_Piles_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 26,
+            "POSITION": 25,
+            "TANGENT": 27,
+            "TEXCOORD_0": 28
+          },
+          "indices": 29,
+          "material": 5,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Shotengai_Maple_room_RE1_Materiall_FloorTatami_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 31,
+            "POSITION": 30,
+            "TANGENT": 32,
+            "TEXCOORD_0": 33
+          },
+          "indices": 34,
+          "material": 6,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Shotengai_MappleRoom_MainStructure_Combined.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "name": "Shotengai_Maple_room_RE1"
+    },
+    {
+      "mesh": 0,
+      "name": "Shotengai_Maple_room_RE1_Material_darkwood_0"
+    },
+    {
+      "mesh": 1,
+      "name": "Shotengai_Maple_room_RE1_Shotengai_Maple_room_RE:Shotengai_Maple_room_RE:Food_0"
+    },
+    {
+      "mesh": 2,
+      "name": "Shotengai_Maple_room_RE1_Material_Wood_Gate_0"
+    },
+    {
+      "mesh": 3,
+      "name": "Shotengai_Maple_room_RE1_Anythingtranspa_0"
+    },
+    {
+      "mesh": 4,
+      "name": "Shotengai_Maple_room_RE1_Not_Transpa_0"
+    },
+    {
+      "mesh": 5,
+      "name": "Shotengai_Maple_room_RE1_Material_Wall_Piles_0"
+    },
+    {
+      "mesh": 6,
+      "name": "Shotengai_Maple_room_RE1_Materiall_FloorTatami_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    },
+    {
+      "sampler": 0,
+      "source": 5
+    },
+    {
+      "sampler": 0,
+      "source": 6
+    },
+    {
+      "sampler": 0,
+      "source": 7
+    },
+    {
+      "sampler": 0,
+      "source": 8
+    },
+    {
+      "sampler": 0,
+      "source": 9
+    },
+    {
+      "sampler": 0,
+      "source": 10
+    },
+    {
+      "sampler": 0,
+      "source": 11
+    },
+    {
+      "sampler": 0,
+      "source": 12
+    },
+    {
+      "sampler": 0,
+      "source": 13
+    },
+    {
+      "sampler": 0,
+      "source": 14
+    },
+    {
+      "sampler": 0,
+      "source": 15
+    },
+    {
+      "sampler": 0,
+      "source": 16
+    },
+    {
+      "sampler": 0,
+      "source": 17
+    },
+    {
+      "sampler": 0,
+      "source": 18
+    },
+    {
+      "sampler": 0,
+      "source": 19
+    },
+    {
+      "sampler": 0,
+      "source": 20
+    }
+  ]
+}

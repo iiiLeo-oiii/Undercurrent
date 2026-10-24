@@ -1,0 +1,94 @@
+fileFormatVersion: 2
+guid: ee1a0cae7959d704e9b58849c0bc9ce8
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Models\japanese_castle\scene.bin
+    assetPath: Assets\Models\japanese_castle\scene.bin
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\roof_baseColor.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\roof_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\roof_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\roof_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\roof_normal.png
+    assetPath: Assets\Models\japanese_castle\textures\roof_normal.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\painted_wood_support_baseColor.png
+    assetPath: Assets\Models\japanese_castle\textures\painted_wood_support_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\painted_wood_support_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\painted_wood_support_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\painted_wood_support_normal.png
+    assetPath: Assets\Models\japanese_castle\textures\painted_wood_support_normal.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\white_painted_wod_baseColor.png
+    assetPath: Assets\Models\japanese_castle\textures\white_painted_wod_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\white_painted_wod_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\white_painted_wod_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\white_painted_wod_normal.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\white_painted_wod_normal.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\base_cobblestone_baseColor.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\base_cobblestone_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\base_cobblestone_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\base_cobblestone_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\conrete_baseColor.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\conrete_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\conrete_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\conrete_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\conrete_normal.png
+    assetPath: Assets\Models\japanese_castle\textures\conrete_normal.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\floor_plank_wood_baseColor.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\floor_plank_wood_baseColor.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\floor_plank_wood_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\floor_plank_wood_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\floor_plank_wood_normal.jpeg
+    assetPath: Assets\Models\japanese_castle\textures\floor_plank_wood_normal.jpeg
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\lamp_baseColor.png
+    assetPath: Assets\Models\japanese_castle\textures\lamp_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\red_wood_baseColor.png
+    assetPath: Assets\Models\japanese_castle\textures\red_wood_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\red_wood_metallicRoughness.png
+    assetPath: Assets\Models\japanese_castle\textures\red_wood_metallicRoughness.png
+  - type: 1
+    originalUri: Assets\Models\japanese_castle\textures\red_wood_normal.png
+    assetPath: Assets\Models\japanese_castle\textures\red_wood_normal.png
+  reportItems: []

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Japanese armor, Edo period (1603-1868)
+* source:	https://sketchfab.com/3d-models/japanese-armor-edo-period-1603-1868-0480d3d8b5fe4d9dbfdee854ce9f4bcf
+* author:	Global Digital Heritage and GDH-Afrika (https://sketchfab.com/GlobalDigitalHeritage)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Japanese armor, Edo period (1603-1868)" (https://sketchfab.com/3d-models/japanese-armor-edo-period-1603-1868-0480d3d8b5fe4d9dbfdee854ce9f4bcf) by Global Digital Heritage and GDH-Afrika (https://sketchfab.com/GlobalDigitalHeritage) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
