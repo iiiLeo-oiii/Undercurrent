@@ -1,0 +1,11 @@
+Model Information:
+* title:	houseplant
+* source:	https://sketchfab.com/3d-models/houseplant-ccdbfe7d55c94344af89b3b90caf9573
+* author:	karlik-nos (https://sketchfab.com/karlik-nos)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "houseplant" (https://sketchfab.com/3d-models/houseplant-ccdbfe7d55c94344af89b3b90caf9573) by karlik-nos (https://sketchfab.com/karlik-nos) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

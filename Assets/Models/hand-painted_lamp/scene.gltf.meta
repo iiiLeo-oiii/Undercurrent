@@ -1,0 +1,56 @@
+fileFormatVersion: 2
+guid: 0cc06096b9126fa40b354aa76f8b740a
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Models\hand-painted_lamp\scene.bin
+    assetPath: Assets\Models\hand-painted_lamp\scene.bin
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Branch_emissive.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Branch_emissive.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Branch_normal.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Branch_normal.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Lamp_emissive.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Lamp_emissive.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Lamp_normal.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Lamp_normal.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Candle_emissive.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Candle_emissive.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Candle_normal.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Candle_normal.png
+  - type: 1
+    originalUri: Assets\Models\hand-painted_lamp\textures\M_Glass_emissive.png
+    assetPath: Assets\Models\hand-painted_lamp\textures\M_Glass_emissive.png
+  reportItems:
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_emissive_strength
