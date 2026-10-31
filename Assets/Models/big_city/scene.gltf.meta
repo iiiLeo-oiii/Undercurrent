@@ -1,0 +1,335 @@
+fileFormatVersion: 2
+guid: 048a004e2afa5354cbb31f786a740bb2
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 715df9372183c47e389bb6e19fbc3b52, type: 3}
+  editorImportSettings:
+    generateSecondaryUVSet: 0
+  importSettings:
+    nodeNameMethod: 1
+    animationMethod: 2
+    generateMipMaps: 1
+    texturesReadable: 0
+    defaultMinFilterMode: 9729
+    defaultMagFilterMode: 9729
+    anisotropicFilterLevel: 1
+  instantiationSettings:
+    mask: -1
+    layer: 0
+    skinUpdateWhenOffscreen: 1
+    lightIntensityFactor: 1
+    sceneObjectCreation: 2
+  assetDependencies:
+  - type: 0
+    originalUri: Assets\Models\big_city\scene.bin
+    assetPath: Assets\Models\big_city\scene.bin
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_0_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_0_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_1_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_1_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_2_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_2_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_3_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_3_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_4_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_4_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_5_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_5_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_6_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_6_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_7_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_7_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_8_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_8_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_9_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_9_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_10_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_10_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_11_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_11_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_12_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_12_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_13_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_13_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_14_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_14_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_15_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_15_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_16_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_16_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_17_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_17_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_18_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_18_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_19_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_19_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_20_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_20_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_21_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_21_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_22_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_22_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_23_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_23_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_24_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_24_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_25_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_25_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_26_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_26_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_27_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_27_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_28_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_28_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_29_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_29_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_30_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_30_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_31_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_31_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_32_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_32_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_33_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_33_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_34_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_34_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_35_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_35_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_36_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_36_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_37_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_37_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_38_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_38_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_39_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_39_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_40_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_40_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_41_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_41_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_42_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_42_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_43_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_43_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_44_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_44_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_45_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_45_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_46_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_46_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_47_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_47_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_48_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_48_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_49_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_49_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_50_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_50_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_51_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_51_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_52_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_52_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_53_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_53_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_54_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_54_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_55_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_55_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_56_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_56_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_57_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_57_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_58_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_58_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_59_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_59_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_60_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_60_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_61_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_61_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_62_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_62_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_63_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_63_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_64_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_64_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_65_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_65_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_66_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_66_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_67_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_67_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_68_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_68_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_69_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_69_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_70_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_70_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_71_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_71_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_72_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_72_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_73_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_73_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_74_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_74_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_75_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_75_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_76_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_76_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_77_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_77_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_78_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_78_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_79_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_79_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_80_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_80_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_81_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_81_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_82_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_82_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_83_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_83_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_84_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_84_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_85_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_85_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_86_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_86_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_87_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_87_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_88_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_88_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_89_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_89_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_90_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_90_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_91_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_91_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_92_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_92_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_93_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_93_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_94_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_94_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_94_specularf0.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_94_specularf0.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_95_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_95_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_96_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_96_baseColor.png
+  - type: 1
+    originalUri: Assets\Models\big_city\textures\Model001_Material133_97_baseColor.png
+    assetPath: Assets\Models\big_city\textures\Model001_Material133_97_baseColor.png
+  reportItems:
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_specular

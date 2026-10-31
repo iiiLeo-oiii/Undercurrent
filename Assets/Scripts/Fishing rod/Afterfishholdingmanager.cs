@@ -55,6 +55,10 @@ public class AfterFishHoldingManager : MonoBehaviour
     [Tooltip("老照片拿在手上的局部缩放")]
     public Vector3 photoHeldLocalScale = Vector3.one;
 
+    [Header("老照片剧情")]
+    [Tooltip("拖入场景中的 OldPhotoStoryManager")]
+    public OldPhotoStoryManager oldPhotoStoryManager;
+
     // 当前手持物品
     private GameObject currentFish;
     private int currentFishIndex = -1;
@@ -72,8 +76,7 @@ public class AfterFishHoldingManager : MonoBehaviour
     // 箱子触发后，等待下一次成功钓鱼
     private bool photoCatchReady = false;
 
-    // 新增：本次游戏运行期间，老照片是否已经发放。
-    // 一旦为 true，后续箱子触发不再提供照片奖励。
+    // 本次游戏运行期间，老照片是否已经发放
     private bool photoAlreadyObtained = false;
 
     void Awake()
@@ -92,14 +95,19 @@ public class AfterFishHoldingManager : MonoBehaviour
                 entry.fishModel.SetActive(false);
         }
 
-        // 老照片是场景中的独立物体。
-        // 先隐藏，等触发特殊钓鱼后再显示。
         if (oldPhoto != null)
             oldPhoto.SetActive(false);
         else
             Debug.LogWarning(
                 "AfterFishHoldingManager：还没有设置 Old Photo！"
             );
+
+        if (oldPhotoStoryManager == null)
+        {
+            Debug.LogWarning(
+                "AfterFishHoldingManager：还没有设置 OldPhotoStoryManager！"
+            );
+        }
     }
 
     void Update()
@@ -111,9 +119,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             HandleQKey();
     }
 
-    // Q键逻辑：
-    // 手上有物品时，只丢下。
-    // 手上没有物品时，才允许捡起附近的物品。
+    // Q键逻辑
     void HandleQKey()
     {
         if (IsHoldingFish())
@@ -141,8 +147,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             && currentFish.transform.parent == fishHoldPoint;
     }
 
-    // 箱子里的鱼触发后调用。
-    // 照片已经获得过，就不再允许重新触发奖励。
+    // 箱子里的鱼触发后调用
     public void MarkPhotoCatchReady()
     {
         if (photoAlreadyObtained)
@@ -159,8 +164,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("箱子已触发：下一次成功钓鱼将获得老照片。");
     }
 
-    // 保留原来的获得随机鱼功能。
-    // 如果照片标记已经触发，这里会优先给照片。
+    // 获得随机鱼
     public void CatchRandomFish()
     {
         if (photoCatchReady)
@@ -209,8 +213,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("获得鱼：" + currentFish.name);
     }
 
-    // 创建飞回途中的物品。
-    // 普通鱼使用 Instantiate；老照片直接使用场景中的对象。
+    // 创建飞回途中的物品
     public GameObject CreateFishForReturn(Vector3 startPosition)
     {
         if (fishHoldPoint == null)
@@ -221,7 +224,6 @@ public class AfterFishHoldingManager : MonoBehaviour
             return null;
         }
 
-        // 先检查是否需要给照片。
         if (photoCatchReady)
             return CreatePhotoForReturn(startPosition);
 
@@ -236,7 +238,6 @@ public class AfterFishHoldingManager : MonoBehaviour
         int selectedIndex = SelectFishIndex(validIndices);
         FishEntry entry = fishList[selectedIndex];
 
-        // 新物品替换旧物品：旧物品先落到地上。
         DropCurrentFish();
 
         GameObject fish = Instantiate(entry.fishModel);
@@ -269,6 +270,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         return fish;
     }
 
+    // 创建老照片飞回物品
     GameObject CreatePhotoForReturn(Vector3 startPosition)
     {
         if (oldPhoto == null)
@@ -279,7 +281,6 @@ public class AfterFishHoldingManager : MonoBehaviour
             return null;
         }
 
-        // 新增：再次检查，防止照片重复发放。
         if (photoAlreadyObtained)
         {
             photoCatchReady = false;
@@ -287,12 +288,9 @@ public class AfterFishHoldingManager : MonoBehaviour
             return null;
         }
 
-        // 照片奖励在开始飞回时立即消耗并锁定。
-        // 不必等待动画结束，避免动画期间重复触发。
         photoCatchReady = false;
         photoAlreadyObtained = true;
 
-        // 如果手里有旧物品，先将其放下。
         DropCurrentFish();
 
         GameObject photo = oldPhoto;
@@ -305,7 +303,6 @@ public class AfterFishHoldingManager : MonoBehaviour
             photoHeldLocalRotation
         );
 
-        // 飞行期间使用适应 FishHoldPoint 缩放的世界缩放。
         Vector3 holdScale = fishHoldPoint.lossyScale;
 
         photo.transform.localScale = new Vector3(
@@ -326,8 +323,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         return photo;
     }
 
-    // 照片奖励触发后，如果其他系统直接调用 CatchRandomFish，
-    // 也能正确获得照片，但不能重复获得。
+    // 直接获得老照片
     void GivePhotoDirectly()
     {
         if (oldPhoto == null || fishHoldPoint == null)
@@ -338,7 +334,6 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 新增：防止其他系统重复调用时再次获得照片。
         if (photoAlreadyObtained)
         {
             photoCatchReady = false;
@@ -365,7 +360,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         Debug.Log("获得特殊物品：老照片。");
     }
 
-    // 飞回结束后，将同一个物品放到手上。
+    // 飞回结束后，将物品放到手上
     public void FinishFishReturn(GameObject fish)
     {
         if (fish == null || fish != returningFish)
@@ -382,7 +377,7 @@ public class AfterFishHoldingManager : MonoBehaviour
             return;
         }
 
-        // 特殊情况：飞回的是老照片。
+        // 老照片分支
         if (returningIsPhoto)
         {
             fish.transform.SetParent(fishHoldPoint, false);
@@ -400,10 +395,23 @@ public class AfterFishHoldingManager : MonoBehaviour
             returningIsPhoto = false;
 
             Debug.Log("老照片已飞回并拿在手上。");
+
+            // 新增：老照片正式拿到手后，启动独立剧情 Manager
+            if (oldPhotoStoryManager != null)
+            {
+                oldPhotoStoryManager.StartOldPhotoStory();
+            }
+            else
+            {
+                Debug.LogError(
+                    "AfterFishHoldingManager：没有设置 OldPhotoStoryManager！"
+                );
+            }
+
             return;
         }
 
-        // 普通鱼的原有逻辑。
+        // 普通鱼分支
         if (returningFishIndex < 0 ||
             returningFishIndex >= fishList.Count)
         {
@@ -452,7 +460,7 @@ public class AfterFishHoldingManager : MonoBehaviour
         if (validIndices.Count > 1 && validIndices.Contains(lastFishIndex))
             validIndices.Remove(lastFishIndex);
 
-        return validIndices[fishRandom.Next(0, validIndices.Count)];
+        return fishRandom.Next(0, validIndices.Count);
     }
 
     Vector3 GetFishScale(FishEntry entry)
@@ -646,7 +654,6 @@ public class AfterFishHoldingManager : MonoBehaviour
             }
         }
 
-        // 捡起新物品前，先放下手中已有的物品。
         if (IsHoldingFish() && currentFish != fish)
             DropCurrentFish();
 
