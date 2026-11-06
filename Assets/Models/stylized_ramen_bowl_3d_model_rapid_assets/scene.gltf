@@ -1,0 +1,313 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.4999989867210388,
+        0.22210833430290222,
+        0.4999989867210388
+      ],
+      "min": [
+        -0.4999989867210388,
+        -0.22369346022605896,
+        -0.4999989867210388
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 33612,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9994207620620728,
+        0.9999380111694336,
+        0.9902703762054443
+      ],
+      "min": [
+        -0.9978734254837036,
+        -1.0,
+        -0.9902276992797852
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9998673796653748,
+        0.9955572485923767,
+        0.9999879598617554,
+        1.0
+      ],
+      "min": [
+        -0.9999812245368958,
+        -0.9995253682136536,
+        -0.9989678263664246,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9999988079071045,
+        0.9999637007713318
+      ],
+      "min": [
+        0.0002881880209315568,
+        0.0051746368408203125
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 22408,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9999988079071045,
+        0.9999637007713318
+      ],
+      "min": [
+        0.0002881880209315568,
+        0.0051746368408203125
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 44816,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9999988079071045,
+        0.9999637007713318
+      ],
+      "min": [
+        0.0002881880209315568,
+        0.0051746368408203125
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 67224,
+      "componentType": 5126,
+      "count": 2801,
+      "max": [
+        0.9999988079071045,
+        0.9999637007713318
+      ],
+      "min": [
+        0.0002881880209315568,
+        0.0051746368408203125
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 12012,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "RapidAssets (https://sketchfab.com/RapidAssets)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/stylized-ramen-bowl-3d-model-rapid-assets-f6e2e0ceed104655ba9d44a44d51d66b",
+      "title": "Stylized Ramen Bowl 3D Model [Rapid Assets]"
+    },
+    "generator": "Sketchfab-0.6.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 48048,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 89632,
+      "byteOffset": 48048,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 67224,
+      "byteOffset": 137680,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 44816,
+      "byteOffset": 204904,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 249720,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/tripo_material_7dcc6aec-866d-458f-a8bc-f5e5a754fd35_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/tripo_material_7dcc6aec-866d-458f-a8bc-f5e5a754fd35_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/tripo_material_7dcc6aec-866d-458f-a8bc-f5e5a754fd35_normal.jpeg"
+    }
+  ],
+  "materials": [
+    {
+      "name": "tripo_material_7dcc6aec-866d-458f-a8bc-f5e5a754fd35",
+      "normalTexture": {
+        "index": 2
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Object_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 4,
+            "TEXCOORD_2": 5,
+            "TEXCOORD_3": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "root"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "GLTF_SceneRootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "name": "tripo_node_7dcc6aec-866d-458f-a8bc-f5e5a754fd35_0"
+    },
+    {
+      "mesh": 0,
+      "name": "Object_4"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}
