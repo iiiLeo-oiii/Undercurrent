@@ -35,6 +35,9 @@ public class TableFoodInteract : InteractableBase
 
             carryController.DropObject(dropPoint);
 
+            // 禁止再次拿起盘子
+            foodPlate.SetPickupEnabled(false);
+
             foodPlaced = true;
 
             return;
