@@ -1,0 +1,11 @@
+Model Information:
+* title:	Plate
+* source:	https://sketchfab.com/3d-models/plate-88477e349ae24e47aeb97956d64273cb
+* author:	Phillip Stephens (https://sketchfab.com/pstephen)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Plate" (https://sketchfab.com/3d-models/plate-88477e349ae24e47aeb97956d64273cb) by Phillip Stephens (https://sketchfab.com/pstephen) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

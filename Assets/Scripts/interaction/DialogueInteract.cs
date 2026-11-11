@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
@@ -12,13 +13,42 @@ public class DialogueInteract : InteractableBase
     public TMP_Text dialogueText;
 
     private bool isDialogueShowing = false;
+    private int currentDialogueIndex = 0;
 
     private void Start()
     {
-        dialogueText.gameObject.SetActive(false);
+        if (dialogueText != null)
+        {
+            dialogueText.gameObject.SetActive(false);
+        }
     }
 
-    // 对话期间允许在范围外继续交互
+    protected override void Update()
+    {
+        // 保留父类的 E 键检测
+        base.Update();
+
+        // 没有开始对话时，不检测左键
+        if (!isDialogueShowing)
+            return;
+
+        // 左键推进对话
+        if (Input.GetMouseButtonDown(0))
+        {
+            currentDialogueIndex++;
+
+            if (currentDialogueIndex < dialogueContent.Count)
+            {
+                dialogueText.text = dialogueContent[currentDialogueIndex];
+            }
+            else
+            {
+                EndDialogue();
+            }
+        }
+    }
+
+    // 对话期间允许离开交互范围
     protected override bool CanInteractOutsideRange()
     {
         return isDialogueShowing;
@@ -26,20 +56,26 @@ public class DialogueInteract : InteractableBase
 
     protected override void OnInteract()
     {
-        if (!isDialogueShowing)
-        {
-            if (dialogueContent.Count == 0)
-                return;
+        // 对话进行中，E 不执行任何操作
+        if (isDialogueShowing)
+            return;
 
-            dialogueText.gameObject.SetActive(true);
-            dialogueText.text = dialogueContent[0];
+        if (dialogueContent.Count == 0 || dialogueText == null)
+            return;
 
-            isDialogueShowing = true;
-        }
-        else
-        {
-            dialogueText.gameObject.SetActive(false);
-            isDialogueShowing = false;
-        }
+        currentDialogueIndex = 0;
+
+        dialogueText.gameObject.SetActive(true);
+        dialogueText.text = dialogueContent[currentDialogueIndex];
+
+        isDialogueShowing = true;
+    }
+
+    private void EndDialogue()
+    {
+        dialogueText.gameObject.SetActive(false);
+
+        isDialogueShowing = false;
+        currentDialogueIndex = 0;
     }
 }
